@@ -1,11 +1,15 @@
 #pragma once
 
-// Inicjuje SDL, SDL_image, SDL_ttf, SDL_mixer w konstruktorze
-// i sprząta w destruktorze. Tworzony raz, na początku w Game.
+// RAII na inicjalizację bibliotek SDL: SDL, SDL_image,
+// SDL_ttf, SDL_mixer. Tworzony raz, jako pierwsze pole Game.
+// Konstruktor rzuca std::runtime_error przy błędzie inicjalizacji.
 class SDLContext {
 public:
-    SDLContext();              // rzuca std::runtime_error przy błędzie
+    SDLContext();
     ~SDLContext();
-    SDLContext(const SDLContext&) = delete;
+
+    SDLContext(const SDLContext&)            = delete;
     SDLContext& operator=(const SDLContext&) = delete;
+    SDLContext(SDLContext&&)                 = delete;
+    SDLContext& operator=(SDLContext&&)      = delete;
 };

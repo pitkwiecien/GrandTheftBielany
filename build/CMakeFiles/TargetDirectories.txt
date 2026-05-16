@@ -1,0 +1,3 @@
+/home/urbanczyk/proi/proj/build/CMakeFiles/megabonk.dir
+/home/urbanczyk/proi/proj/build/CMakeFiles/edit_cache.dir
+/home/urbanczyk/proi/proj/build/CMakeFiles/rebuild_cache.dir
