@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/megabonk.dir/src/core/StateMachine.cpp.o CMakeFiles/megabonk.dir/src/main.cpp.o -o bin/megabonk   -L/usr/local/lib  -Wl,-rpath,/usr/local/lib /usr/local/lib/libSDL2.so /usr/local/lib/libSDL2main.a /usr/lib/x86_64-linux-gnu/libSDL2_image.so /usr/lib/x86_64-linux-gnu/libSDL2_ttf.so /usr/lib/x86_64-linux-gnu/libSDL2_mixer.so 
