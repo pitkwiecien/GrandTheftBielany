@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
+#include "core/StateMachine.hpp"
 
-class StateMachine;
 class Renderer;
 class InputManager;
 
