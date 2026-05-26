@@ -6,6 +6,7 @@
 
 #include "ecs/components/PlayerTag.hpp"
 #include "ecs/components/Velocity.hpp"
+#include "math/MathUtils.hpp"
 
 PlayerInputSystem::PlayerInputSystem(
     InputManager& input,
@@ -16,7 +17,7 @@ PlayerInputSystem::PlayerInputSystem(
 
 void PlayerInputSystem::update(
     Registry& reg,
-    float /*dt*/)
+    float dt)
 {
     reg.view<PlayerTag, Velocity>(
         [&](Entity /*e*/,
@@ -37,6 +38,20 @@ void PlayerInputSystem::update(
         if (m_input.isDown(SDL_SCANCODE_D) ||
             m_input.isDown(SDL_SCANCODE_RIGHT)) dir.x += 1.f;
 
-        vel.value = dir.normalized() * m_baseSpeed;
+        Vec2 targetVelocity = dir.normalized() * m_baseSpeed;
+        
+        float currentSpeed = vel.value.length();
+        float speedRatio = currentSpeed / m_baseSpeed;
+
+        speedRatio = MathUtils::clamp(speedRatio, 0.f, 1.f);
+
+        float minSmooth = 3.f;
+        float maxSmooth = 18.f;
+
+        float dynamicSmoothing = minSmooth + (maxSmooth - minSmooth) * (speedRatio * speedRatio);
+        if (dir.x == 0.f && dir.y == 0.f) {
+            dynamicSmoothing = 15.f; 
+        }
+        vel.value = MathUtils::lerp(vel.value, targetVelocity, dynamicSmoothing * dt);
     });
 }
