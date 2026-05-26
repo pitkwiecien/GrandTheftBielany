@@ -36,4 +36,7 @@ private:
     std::vector<std::unique_ptr<ISystem>> m_systems;
     std::unique_ptr<RenderSystem>          m_renderSystem;
     std::unique_ptr<SpriteDirectionSystem> m_dirSystem;
+    SDL_Texture* m_bgTexture = nullptr;
+    int m_bgWidth = 0;
+    int m_bgHeight = 0;
 };

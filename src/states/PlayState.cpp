@@ -15,6 +15,7 @@
 #include "ecs/components/DirectionComp.hpp"
 #include "ecs/components/EnemyTag.hpp"
 #include "ecs/components/Collider.hpp"
+#include "math/MathUtils.hpp"
 
 static const char* kPlayerTextures[8] = {
     "assets/textures/huntsman/idle/rotations/north.png",       // 0 North
@@ -30,6 +31,9 @@ static const char* kPlayerTextures[8] = {
 static constexpr const char* kBoarTexture =
     "assets/textures/boar/south.png";
 
+static constexpr const char* kMapTexture = 
+    "assets/textures/maps/map1_m.png";
+
 PlayState::PlayState(
     StateContext ctx,
     TextureManager& textures,
@@ -43,6 +47,11 @@ PlayState::~PlayState() = default;
 
 void PlayState::onEnter() {
     m_camera.setViewport(1280, 720);
+
+    m_bgTexture = m_textures.get(kMapTexture);
+    if (m_bgTexture) {
+        m_textures.querySize(m_bgTexture, m_bgWidth, m_bgHeight);
+    }
 
     spawnPlayer();
     spawnBoar();
@@ -124,13 +133,35 @@ void PlayState::update(float dt) {
 
     m_dirSystem->update(m_registry, dt);
 
-    if (auto* t = m_registry.tryGet<Transform>(m_player))
-        m_camera.follow(t->pos, dt);
+    if (auto* t = m_registry.tryGet<Transform>(m_player)) {
+        // m_camera.follow(t->pos, dt);
+        const float padding = 32.f; 
+        const float minX = -640.f + padding;
+        const float maxX =  640.f - padding;
+        const float minY = -360.f + padding;
+        const float maxY =  360.f - padding;
+
+        t->pos.x = MathUtils::clamp(t->pos.x, minX, maxX);
+        t->pos.y = MathUtils::clamp(t->pos.y, minY, maxY);
+    }
 
     m_registry.flushDestroyed();
 }
 
 void PlayState::render(Renderer& renderer) {
     renderer.clear({40, 140, 40, 255});
+    if (m_bgTexture) {
+        // fixed to the world
+        // centers the map at world coordinates (0, 0)
+
+        // SDL_Rect dst = m_camera.worldToScreen({0.f, 0.f}, m_bgWidth, m_bgHeight);
+        // renderer.drawTexture(m_bgTexture, nullptr, &dst);
+
+        // fixed to the screen
+        // fills the entire 1280x720 window regardless of where the player walks
+
+        SDL_Rect screenDst = {0, 0, 1280, 720};
+        renderer.drawTexture(m_bgTexture, nullptr, &screenDst);
+    }
     m_renderSystem->render(m_registry);
 }
