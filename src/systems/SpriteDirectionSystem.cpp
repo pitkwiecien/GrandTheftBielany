@@ -4,6 +4,7 @@
 #include "ecs/components/Velocity.hpp"
 #include "ecs/components/DirectionComp.hpp"
 #include "ecs/components/SpriteComp.hpp"
+#include "ecs/components/AnimationComp.hpp"
 
 static Direction8 vecToDir8(float vx, float vy) {
     float angle = std::atan2(vy, vx);
@@ -33,13 +34,16 @@ static bool facingRight(Direction8 d) {
 
 void SpriteDirectionSystem::update(Registry& reg, float /*dt*/) {
     reg.view<Velocity, DirectionComp, SpriteComp>(
-        [](Entity /*e*/,
+        [&](Entity e,
            Velocity& vel,
            DirectionComp& dir,
            SpriteComp& sprite)
     {
-        if (vel.value.lengthSq() < 1.f)
-            return;
+        bool isMoving = vel.value.lengthSq() >= 1.f;
+
+        if (auto* anim = reg.tryGet<AnimationComp>(e)) {
+            anim->isPlaying = isMoving;
+        }
         dir.facing = vecToDir8(vel.value.x, vel.value.y);
         SDL_Texture* tex = dir.textures[static_cast<int>(dir.facing)];
         if (tex)

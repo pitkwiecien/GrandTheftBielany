@@ -1,5 +1,4 @@
 #include "states/PlayState.hpp"
-#include "core/InputManager.hpp"
 #include "core/Renderer.hpp"
 #include "resources/TextureManager.hpp"
 #include "resources/FontManager.hpp"
@@ -8,6 +7,7 @@
 #include "systems/EnemyAISystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "systems/SpriteDirectionSystem.hpp"
+#include "systems/AnimationSystem.hpp"
 #include "ecs/components/Transform.hpp"
 #include "ecs/components/Velocity.hpp"
 #include "ecs/components/PlayerTag.hpp"
@@ -15,6 +15,7 @@
 #include "ecs/components/DirectionComp.hpp"
 #include "ecs/components/EnemyTag.hpp"
 #include "ecs/components/Collider.hpp"
+#include "ecs/components/AnimationComp.hpp"
 #include "math/MathUtils.hpp"
 
 static const char* kPlayerTextures[8] = {
@@ -26,6 +27,17 @@ static const char* kPlayerTextures[8] = {
     "assets/textures/huntsman/idle/rotations/south-west.png",  // 5 SouthWest
     "assets/textures/huntsman/idle/rotations/west.png",        // 6 West
     "assets/textures/huntsman/idle/rotations/north-west.png",  // 7 NorthWest
+};
+
+static const char* kPlayerRunTextures[8] = {
+    "assets/textures/huntsman/running/rotations/north.png",
+    "assets/textures/huntsman/running/rotations/north-east.png",
+    "assets/textures/huntsman/running/rotations/east.png",
+    "assets/textures/huntsman/running/rotations/south-east.png",
+    "assets/textures/huntsman/running/rotations/south.png",
+    "assets/textures/huntsman/running/rotations/south-west.png",
+    "assets/textures/huntsman/running/rotations/west.png",
+    "assets/textures/huntsman/running/rotations/north-west.png",
 };
 
 static constexpr const char* kBoarTexture =
@@ -75,15 +87,27 @@ void PlayState::spawnPlayer() {
     auto& vel = m_registry.add<Velocity>(m_player);
     vel.maxSpeed = 220.f;
 
+    // load the run textures into the DirectionComp
     auto& dir = m_registry.add<DirectionComp>(m_player);
-    for (int i = 0; i < 8; ++i)
-        dir.textures[i] = m_textures.get(kPlayerTextures[i]);
+    for (int i = 0; i < 8; ++i) {
+        dir.textures[i] = m_textures.get(kPlayerRunTextures[i]);
+    }
     dir.facing = Direction8::South;
 
+    // set up the Animation Component
+    auto& anim = m_registry.add<AnimationComp>(m_player);
+    anim.numFrames = 4;
+    anim.frameWidth = 80;
+    anim.frameHeight = 80;
+    anim.frameTime = 0.1f;
+    anim.isPlaying = false;
+
+    // set the initial sprite bounds
     auto& sprite = m_registry.add<SpriteComp>(m_player);
     sprite.texture = dir.textures[static_cast<int>(Direction8::South)];
-    sprite.w = 64;
-    sprite.h = 64;
+    sprite.srcRect = {0, 0, 80, 80};
+    sprite.w = 80;
+    sprite.h = 80;
 }
 
 void PlayState::spawnBoar() {
@@ -117,6 +141,9 @@ void PlayState::buildSystems() {
 
     m_systems.push_back(
         std::make_unique<MovementSystem>());
+    
+    m_systems.push_back(
+        std::make_unique<AnimationSystem>());
 }
 
 void PlayState::handleEvent(const SDL_Event& e) {

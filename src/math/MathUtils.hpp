@@ -34,4 +34,14 @@ inline float angleDeg(const Vec2& v) {
     return toDegrees(std::atan2(v.y, v.x));
 }
 
+inline Vec2 snapTo8Directions(Vec2 dir) {
+        if (dir.x == 0.f && dir.y == 0.f) {
+            return {1.f, 0.f}; // Default to East
+        }
+        float angle = std::atan2(dir.y, dir.x);
+        constexpr float kStep = kPi / 4.f;
+        float snappedAngle = std::round(angle / kStep) * kStep;
+        return {std::cos(snappedAngle), std::sin(snappedAngle)};
+    }
+
 } // namespace MathUtils
