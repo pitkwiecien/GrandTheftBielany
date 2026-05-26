@@ -15,5 +15,6 @@ enum class Direction8 : int {
 
 struct DirectionComp {
     Direction8 facing = Direction8::South;
-    std::array<SDL_Texture*, 8> textures{};
+    std::array<SDL_Texture*, 8> idleTextures{};
+    std::array<SDL_Texture*, 8> runTextures{};
 };

@@ -90,7 +90,8 @@ void PlayState::spawnPlayer() {
     // load the run textures into the DirectionComp
     auto& dir = m_registry.add<DirectionComp>(m_player);
     for (int i = 0; i < 8; ++i) {
-        dir.textures[i] = m_textures.get(kPlayerRunTextures[i]);
+        dir.idleTextures[i] = m_textures.get(kPlayerTextures[i]);
+        dir.runTextures[i]  = m_textures.get(kPlayerRunTextures[i]);
     }
     dir.facing = Direction8::South;
 
@@ -104,7 +105,7 @@ void PlayState::spawnPlayer() {
 
     // set the initial sprite bounds
     auto& sprite = m_registry.add<SpriteComp>(m_player);
-    sprite.texture = dir.textures[static_cast<int>(Direction8::South)];
+    sprite.texture = dir.idleTextures[static_cast<int>(Direction8::South)];
     sprite.srcRect = {0, 0, 80, 80};
     sprite.w = 80;
     sprite.h = 80;

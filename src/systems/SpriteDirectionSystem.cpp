@@ -34,20 +34,25 @@ static bool facingRight(Direction8 d) {
 
 void SpriteDirectionSystem::update(Registry& reg, float /*dt*/) {
     reg.view<Velocity, DirectionComp, SpriteComp>(
-        [&](Entity e,
-           Velocity& vel,
-           DirectionComp& dir,
-           SpriteComp& sprite)
+        [&](Entity e, Velocity& vel, DirectionComp& dir, SpriteComp& sprite)
     {
         bool isMoving = vel.value.lengthSq() >= 1.f;
 
-        if (auto* anim = reg.tryGet<AnimationComp>(e)) {
-            anim->isPlaying = isMoving;
+        if (isMoving) {
+            dir.facing = vecToDir8(vel.value.x, vel.value.y);
         }
-        dir.facing = vecToDir8(vel.value.x, vel.value.y);
-        SDL_Texture* tex = dir.textures[static_cast<int>(dir.facing)];
-        if (tex)
+
+        SDL_Texture* tex = isMoving ? 
+            dir.runTextures[static_cast<int>(dir.facing)] : 
+            dir.idleTextures[static_cast<int>(dir.facing)];
+
+        if (tex) {
             sprite.texture = tex;
+        }
+
+        if (auto* anim = reg.tryGet<AnimationComp>(e)) {
+            anim->isPlaying = isMoving; 
+        }
     });
 
     reg.view<Velocity, SpriteComp>(

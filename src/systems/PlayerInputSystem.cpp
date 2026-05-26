@@ -53,5 +53,10 @@ void PlayerInputSystem::update(
             dynamicSmoothing = 15.f; 
         }
         vel.value = MathUtils::lerp(vel.value, targetVelocity, dynamicSmoothing * dt);
+        // kills micro-jitter so the animation doesn't blink when stopping
+        if (vel.value.lengthSq() < 0.5f) {
+            vel.value.x = 0.f;
+            vel.value.y = 0.f;
+        }
     });
 }
