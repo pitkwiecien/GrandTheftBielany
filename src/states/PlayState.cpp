@@ -66,8 +66,6 @@ void PlayState::onEnter() {
     }
 
     spawnPlayer();
-    spawnBoar();
-
     buildSystems();
 
     m_renderSystem = std::make_unique<RenderSystem>(
@@ -111,26 +109,50 @@ void PlayState::spawnPlayer() {
     sprite.h = 80;
 }
 
-void PlayState::spawnBoar() {
-    Entity boar = m_registry.create();
+void PlayState::spawnWaveEnemy(Vec2 pos) {
+    Entity e = m_registry.create();
 
-    auto& t = m_registry.add<Transform>(boar);
-    t.pos = {300.f, 200.f};
+    auto& t = m_registry.add<Transform>(e);
+    t.pos = pos;
 
-    auto& enemy = m_registry.add<EnemyTag>(boar);
+    auto& enemy = m_registry.add<EnemyTag>(e);
     enemy.touchDamage = 1.f;
     enemy.xpReward    = 2.f;
 
-    auto& vel = m_registry.add<Velocity>(boar);
+    auto& vel = m_registry.add<Velocity>(e);
     vel.maxSpeed = 80.f;
 
-    auto& sprite = m_registry.add<SpriteComp>(boar);
+    auto& sprite = m_registry.add<SpriteComp>(e);
     sprite.texture = m_textures.get(kBoarTexture);
     sprite.w = 64;
     sprite.h = 64;
 
-    auto& col = m_registry.add<Collider>(boar);
+    auto& col = m_registry.add<Collider>(e);
     col.radius = 28.f;
+}
+
+Vec2 PlayState::findSpawnPos() {
+    static constexpr float kEnemyR  = 28.f;
+    static constexpr int   kAttempts = 20;
+
+    for (int i = 0; i < kAttempts; ++i) {
+        Vec2 candidate = m_waveDirector.randomEdgePos();
+        bool clear = true;
+        m_registry.view<Transform, Collider>(
+            [&](Entity, Transform& tr, Collider& c) {
+                float minD = c.radius + kEnemyR;
+                if (Vec2::distanceSq(candidate, tr.pos) < minD * minD)
+                    clear = false;
+            });
+        if (clear) return candidate;
+    }
+    return m_waveDirector.randomEdgePos();
+}
+
+int PlayState::countLivingEnemies() {
+    int n = 0;
+    m_registry.view<EnemyTag>([&](Entity, EnemyTag&) { ++n; });
+    return n;
 }
 
 void PlayState::buildSystems() {
@@ -163,7 +185,7 @@ void PlayState::update(float dt) {
 
     if (auto* t = m_registry.tryGet<Transform>(m_player)) {
         // m_camera.follow(t->pos, dt);
-        const float padding = 32.f; 
+        const float padding = 32.f;
         const float minX = -640.f + padding;
         const float maxX =  640.f - padding;
         const float minY = -360.f + padding;
@@ -172,6 +194,10 @@ void PlayState::update(float dt) {
         t->pos.x = MathUtils::clamp(t->pos.x, minX, maxX);
         t->pos.y = MathUtils::clamp(t->pos.y, minY, maxY);
     }
+
+    int toSpawn = m_waveDirector.update(dt, countLivingEnemies());
+    for (int i = 0; i < toSpawn; ++i)
+        spawnWaveEnemy(findSpawnPos());
 
     m_registry.flushDestroyed();
 }

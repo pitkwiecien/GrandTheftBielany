@@ -1,29 +1,30 @@
 #pragma once
-#include <vector>
-#include "EnemyType.hpp"
+#include "math/Vec2.hpp"
 
-// Rdzeń survivora: steruje tym, co i jak gęsto się spawnuje
-// w funkcji czasu gry. Tempo i pula wrogów rosną z czasem,
-// co jakiś czas wyzwala "elitarną" falę lub bossa.
+// Steruje falami wrogów:
+// - fala N spawuje N wrogów, co 2 sekundy na krawędziach mapy
+// - kolejna fala startuje po 5 s od śmierci ostatniego wroga
+//   lub po kMaxIdleTime sekundach (cokolwiek nastąpi pierwsze)
 class WaveDirector {
 public:
-    void loadDefaults();
-    void registerEnemy(const EnemyType& type);
+    static constexpr float kSpawnInterval   = 2.f;  // s między kolejnymi spawnami w fali
+    static constexpr float kAllDeadCooldown = 5.f;  // s przerwy po wyczyszczeniu fali
+    static constexpr float kMaxIdleTime     = 30.f; // max s między falami
 
-    // Zwraca liczbę wrogów do zespawnowania w tej klatce (akumulator).
-    int  enemiesToSpawn(float gameTime, float dt);
+    // Wywołaj co klatkę. livingEnemies = aktualna liczba żywych wrogów na planszy.
+    // Zwraca liczbę wrogów do zespawnowania w tej klatce.
+    int update(float dt, int livingEnemies);
 
-    // Losuje typ wroga dostępny dla danego czasu gry (wg wag).
-    const EnemyType* pickEnemy(float gameTime) const;
+    int  currentWave() const { return m_wave; }
+    bool isSpawning()  const { return !m_idle; }
 
-    bool isBossTime(float gameTime) const;
-    const EnemyType* currentBoss(float gameTime) const;
+    Vec2 randomEdgePos() const;
 
 private:
-    float spawnRate(float gameTime) const; // wrogów / sekundę
-
-    std::vector<EnemyType> m_enemies;
-    std::vector<EnemyType> m_bosses;
-    float m_accumulator   = 0.f;
-    float m_lastBossTime  = -1.f;
+    int   m_wave         = 1;
+    int   m_toSpawn      = 1;
+    float m_spawnTimer   = 0.f;
+    bool  m_idle         = false;
+    float m_maxIdleTimer = 0.f;
+    float m_allDeadTimer = -1.f;
 };

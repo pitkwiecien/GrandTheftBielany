@@ -3,6 +3,8 @@
 #include "ecs/Registry.hpp"
 #include "ecs/Entity.hpp"
 #include "gameplay/Camera.hpp"
+#include "gameplay/WaveDirector.hpp"
+#include "math/Vec2.hpp"
 #include <memory>
 #include <vector>
 
@@ -23,8 +25,10 @@ public:
 
 private:
     void spawnPlayer();
-    void spawnBoar();
     void buildSystems();
+    void spawnWaveEnemy(Vec2 pos);
+    Vec2 findSpawnPos();
+    int  countLivingEnemies();
 
 private:
     StateContext m_ctx;
@@ -33,6 +37,7 @@ private:
     Registry m_registry;
     Entity m_player = kNullEntity;
     Camera m_camera;
+    WaveDirector m_waveDirector;
     std::vector<std::unique_ptr<ISystem>> m_systems;
     std::unique_ptr<RenderSystem>          m_renderSystem;
     std::unique_ptr<SpriteDirectionSystem> m_dirSystem;
