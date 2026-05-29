@@ -1,5 +1,6 @@
+#include "math/Math.hpp"
 #include "gameplay/Camera.hpp"
-#include "math/MathUtils.hpp"
+
 
 void Camera::setViewport(int w, int h) {
     vw = w;
@@ -9,7 +10,7 @@ void Camera::setViewport(int w, int h) {
 void Camera::follow(Vec2 target, float dt, float smoothing) {
     float t = smoothing * dt;
 
-    m_center = MathUtils::lerp(m_center, target, t);
+    m_center = Math::lerp(m_center, target, t);
 }
 
 SDL_Rect Camera::worldToScreen(Vec2 worldPos, int w, int h) const{

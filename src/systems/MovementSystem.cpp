@@ -1,7 +1,6 @@
 #include "systems/MovementSystem.hpp"
+#include "ecs/Components.hpp"
 #include "ecs/Registry.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/Velocity.hpp"
 
 void MovementSystem::update(Registry& reg, float dt)
 {

@@ -1,10 +1,11 @@
 #pragma once
+#include "math/Math.hpp"
 #include "core/GameState.hpp"
 #include "ecs/Registry.hpp"
 #include "ecs/Entity.hpp"
 #include "gameplay/Camera.hpp"
 #include "gameplay/WaveDirector.hpp"
-#include "math/Vec2.hpp"
+
 #include <SDL_ttf.h>
 #include <memory>
 #include <vector>

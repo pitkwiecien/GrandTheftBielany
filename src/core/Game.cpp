@@ -9,7 +9,6 @@ Game::Game()
       m_timer(),
       m_textures(m_renderer),
       m_fonts(),
-      m_audio(),
       m_states(),
       m_running(true)
 {

@@ -1,11 +1,8 @@
+#include "math/Math.hpp"
+#include "ecs/Components.hpp"
 #include "systems/ContactDamageSystem.hpp"
 #include "ecs/Registry.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/Collider.hpp"
-#include "ecs/components/Health.hpp"
-#include "ecs/components/EnemyTag.hpp"
-#include "ecs/components/PlayerTag.hpp"
-#include "math/Vec2.hpp"
+
 #include <cmath>
 
 void ContactDamageSystem::update(Registry& reg, float dt) {

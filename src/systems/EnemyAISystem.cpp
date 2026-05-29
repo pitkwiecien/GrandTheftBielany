@@ -1,10 +1,7 @@
 #include "systems/EnemyAISystem.hpp"
+#include "ecs/Components.hpp"
 #include <cmath>
 #include "ecs/Registry.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/Velocity.hpp"
-#include "ecs/components/EnemyTag.hpp"
-#include "ecs/components/PlayerTag.hpp"
 
 static Vec2 dirToPlayer(const Vec2& from, const Vec2& to) {
     float dx = to.x - from.x;

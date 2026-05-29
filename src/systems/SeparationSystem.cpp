@@ -1,8 +1,6 @@
 #include "systems/SeparationSystem.hpp"
+#include "ecs/Components.hpp"
 #include "ecs/Registry.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/Collider.hpp"
-#include "ecs/components/EnemyTag.hpp"
 #include <vector>
 #include <cmath>
 

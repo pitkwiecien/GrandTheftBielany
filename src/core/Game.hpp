@@ -7,7 +7,6 @@
 #include "StateMachine.hpp"
 #include "resources/TextureManager.hpp"
 #include "resources/FontManager.hpp"
-#include "resources/AudioManager.hpp"
 
 // Punkt centralny. Kolejność pól = kolejność inicjalizacji:
 // kontekst SDL musi powstać zanim powstanie okno/renderer.
@@ -29,7 +28,6 @@ private:
 
     TextureManager m_textures;
     FontManager    m_fonts;
-    AudioManager   m_audio;
 
     StateMachine   m_states;
     bool           m_running = true;

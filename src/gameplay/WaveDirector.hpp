@@ -1,5 +1,6 @@
 #pragma once
-#include "math/Vec2.hpp"
+#include "math/Math.hpp"
+
 
 // Steruje falami wrogów:
 // - fala N spawuje N wrogów, co 2 sekundy na krawędziach mapy

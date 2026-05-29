@@ -1,7 +1,6 @@
 #include "systems/AnimationSystem.hpp"
+#include "ecs/Components.hpp"
 #include "ecs/Registry.hpp"
-#include "ecs/components/SpriteComp.hpp"
-#include "ecs/components/AnimationComp.hpp"
 
 void AnimationSystem::update(Registry& reg, float dt) {
     reg.view<AnimationComp, SpriteComp>(

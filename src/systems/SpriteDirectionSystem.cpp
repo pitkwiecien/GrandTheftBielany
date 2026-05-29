@@ -1,10 +1,7 @@
 #include "systems/SpriteDirectionSystem.hpp"
+#include "ecs/Components.hpp"
 #include <cmath>
 #include "ecs/Registry.hpp"
-#include "ecs/components/Velocity.hpp"
-#include "ecs/components/DirectionComp.hpp"
-#include "ecs/components/SpriteComp.hpp"
-#include "ecs/components/AnimationComp.hpp"
 
 static Direction8 vecToDir8(float vx, float vy) {
     float angle = std::atan2(vy, vx);

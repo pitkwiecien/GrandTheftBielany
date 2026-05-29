@@ -1,12 +1,12 @@
+#include "math/Math.hpp"
+#include "ecs/Components.hpp"
 #include "systems/PlayerInputSystem.hpp"
 
 #include "core/InputManager.hpp"
 
 #include "ecs/Registry.hpp"
 
-#include "ecs/components/PlayerTag.hpp"
-#include "ecs/components/Velocity.hpp"
-#include "math/MathUtils.hpp"
+
 
 PlayerInputSystem::PlayerInputSystem(
     InputManager& input,
@@ -43,7 +43,7 @@ void PlayerInputSystem::update(
         float currentSpeed = vel.value.length();
         float speedRatio = currentSpeed / m_baseSpeed;
 
-        speedRatio = MathUtils::clamp(speedRatio, 0.f, 1.f);
+        speedRatio = Math::clamp(speedRatio, 0.f, 1.f);
 
         float minSmooth = 3.f;
         float maxSmooth = 18.f;
@@ -52,7 +52,7 @@ void PlayerInputSystem::update(
         if (dir.x == 0.f && dir.y == 0.f) {
             dynamicSmoothing = 15.f; 
         }
-        vel.value = MathUtils::lerp(vel.value, targetVelocity, dynamicSmoothing * dt);
+        vel.value = Math::lerp(vel.value, targetVelocity, dynamicSmoothing * dt);
         // kills micro-jitter so the animation doesn't blink when stopping
         if (vel.value.lengthSq() < 0.5f) {
             vel.value.x = 0.f;

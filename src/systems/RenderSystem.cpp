@@ -1,9 +1,8 @@
 #include "systems/RenderSystem.hpp"
+#include "ecs/Components.hpp"
 #include "core/Renderer.hpp"
 #include "gameplay/Camera.hpp"
 #include "ecs/Registry.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/SpriteComp.hpp"
 
 RenderSystem::RenderSystem(
     Renderer& renderer,

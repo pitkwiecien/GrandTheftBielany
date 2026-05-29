@@ -1,7 +1,8 @@
 #pragma once
+#include "math/Math.hpp"
 #include <SDL.h>
 #include <array>
-#include "math/Vec2.hpp"
+
 
 // Trzyma snapshot stanu klawiatury/myszy.
 // Pętla: beginFrame() -> handleEvent() dla każdego SDL_Event -> zapytania.

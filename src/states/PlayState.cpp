@@ -1,3 +1,5 @@
+#include "math/Math.hpp"
+#include "ecs/Components.hpp"
 #include "states/PlayState.hpp"
 #include <cmath>
 #include <string>
@@ -12,16 +14,7 @@
 #include "systems/AnimationSystem.hpp"
 #include "systems/SeparationSystem.hpp"
 #include "systems/ContactDamageSystem.hpp"
-#include "ecs/components/Transform.hpp"
-#include "ecs/components/Velocity.hpp"
-#include "ecs/components/PlayerTag.hpp"
-#include "ecs/components/SpriteComp.hpp"
-#include "ecs/components/DirectionComp.hpp"
-#include "ecs/components/EnemyTag.hpp"
-#include "ecs/components/Collider.hpp"
-#include "ecs/components/Health.hpp"
-#include "ecs/components/AnimationComp.hpp"
-#include "math/MathUtils.hpp"
+
 
 static const char* kPlayerTextures[8] = {
     "assets/textures/huntsman/idle/rotations/north.png",       // 0 North
@@ -216,8 +209,8 @@ void PlayState::update(float dt) {
         const float minY = -360.f + padding;
         const float maxY =  360.f - padding;
 
-        t->pos.x = MathUtils::clamp(t->pos.x, minX, maxX);
-        t->pos.y = MathUtils::clamp(t->pos.y, minY, maxY);
+        t->pos.x = Math::clamp(t->pos.x, minX, maxX);
+        t->pos.y = Math::clamp(t->pos.y, minY, maxY);
     }
 
     if (auto* hp = m_registry.tryGet<Health>(m_player)) {

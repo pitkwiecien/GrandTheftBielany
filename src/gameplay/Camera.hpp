@@ -1,6 +1,7 @@
 #pragma once
+#include "math/Math.hpp"
 #include <SDL.h>
-#include "math/Vec2.hpp"
+
 
 class Camera {
 public:
