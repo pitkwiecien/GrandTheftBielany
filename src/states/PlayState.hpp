@@ -46,4 +46,7 @@ private:
     SDL_Texture* m_bgTexture     = nullptr;
     SDL_Texture* m_bulletTexture = nullptr;
     TTF_Font*    m_hpFont        = nullptr;
+    TTF_Font*    m_waveFont      = nullptr;
+    float        m_waveAnnounceTimer = 0.f;
+    int          m_lastAnnouncedWave  = 0;
 };

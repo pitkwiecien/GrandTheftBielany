@@ -62,7 +62,8 @@ void PlayState::onEnter() {
 
     m_bgTexture = m_textures.get(kMapTexture);
 
-    m_hpFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
+    m_hpFont   = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
+    m_waveFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 36);
 
     SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormat(0, 10, 4, 32, SDL_PIXELFORMAT_RGBA32);
     SDL_FillRect(surf, nullptr, SDL_MapRGBA(surf->format, 255, 220, 50, 255));
@@ -242,6 +243,14 @@ void PlayState::update(float dt) {
     for (int i = 0; i < toSpawn; ++i)
         spawnWaveEnemy(findSpawnPos());
 
+    int wave = m_waveDirector.currentWave();
+    if (wave != m_lastAnnouncedWave) {
+        m_lastAnnouncedWave    = wave;
+        m_waveAnnounceTimer    = 3.f;
+    }
+    if (m_waveAnnounceTimer > 0.f)
+        m_waveAnnounceTimer -= dt;
+
     m_registry.flushDestroyed();
 }
 
@@ -252,6 +261,30 @@ void PlayState::render(Renderer& renderer) {
         renderer.drawTexture(m_bgTexture, nullptr, &screenDst);
     }
     m_renderSystem->render(m_registry);
+
+    if (m_waveFont && m_waveAnnounceTimer > 0.f) {
+        std::string text = "Fala " + std::to_string(m_lastAnnouncedWave);
+        Uint8 alpha = (m_waveAnnounceTimer >= 0.5f)
+            ? 255
+            : static_cast<Uint8>(255.f * m_waveAnnounceTimer / 0.5f);
+
+        auto drawWaveText = [&](int ox, int oy, SDL_Color col) {
+            col.a = alpha;
+            SDL_Surface* s = TTF_RenderUTF8_Blended(m_waveFont, text.c_str(), col);
+            if (!s) return;
+            SDL_Texture* t = SDL_CreateTextureFromSurface(renderer.handle(), s);
+            SDL_FreeSurface(s);
+            if (!t) return;
+            SDL_SetTextureAlphaMod(t, alpha);
+            int w, h;
+            SDL_QueryTexture(t, nullptr, nullptr, &w, &h);
+            SDL_Rect dst{(1280 - w) / 2 + ox, 24 + oy, w, h};
+            SDL_RenderCopy(renderer.handle(), t, nullptr, &dst);
+            SDL_DestroyTexture(t);
+        };
+
+        drawWaveText(0, 0, {255, 210, 40, 255});   // tekst
+    }
 
     if (m_hpFont) {
         auto* hp = m_registry.tryGet<Health>(m_player);
