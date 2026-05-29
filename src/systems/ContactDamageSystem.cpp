@@ -1,9 +1,6 @@
-#include "math/Math.hpp"
-#include "ecs/Components.hpp"
 #include "systems/ContactDamageSystem.hpp"
 #include "ecs/Registry.hpp"
-
-#include <cmath>
+#include "ecs/Components.hpp"
 
 void ContactDamageSystem::update(Registry& reg, float dt) {
     Entity player = kNullEntity;
@@ -30,14 +27,12 @@ void ContactDamageSystem::update(Registry& reg, float dt) {
 
             if (distSq >= minDist * minDist) return;
 
-            // Separacja: wypchnij wroga poza obszar gracza
             float dist = (distSq > 1e-8f) ? std::sqrt(distSq) : 1.f;
             if (distSq <= 1e-8f) { dx = minDist; dy = 0.f; }
             float overlap = minDist - dist;
             t.pos.x += (dx / dist) * overlap;
             t.pos.y += (dy / dist) * overlap;
 
-            // Obrażenia tylko gdy gracz nie jest nietykalny
             if (playerHealth->invulnTimer <= 0.f) {
                 playerHealth->damage(enemy.touchDamage);
                 playerHealth->invulnTimer = 1.f;

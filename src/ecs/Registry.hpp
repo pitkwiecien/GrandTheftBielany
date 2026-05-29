@@ -44,7 +44,8 @@ public:
         if (!first) return;
         first->each([&](std::uint32_t id, First& f) {
             if ((has<Rest>(Entity{id, 0}) && ...)) {
-                fn(Entity{id, 0}, f, *tryPool<Rest>()->tryGet(id)...);
+                Entity e{id, id < generations.size() ? generations[id] : 0u};
+                fn(e, f, *tryPool<Rest>()->tryGet(id)...);
             }
         });
     }

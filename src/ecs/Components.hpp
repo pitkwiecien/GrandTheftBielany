@@ -77,3 +77,8 @@ struct AnimationComp {
     int   frameHeight  = 0;
     bool  isPlaying    = false;
 };
+
+struct ProjectileTag {
+    float damage   = 10.f;
+    float lifetime =  2.f;
+};

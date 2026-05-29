@@ -23,27 +23,21 @@ int WaveDirector::update(float dt, int livingEnemies) {
             --m_toSpawn;
             m_spawnTimer = kSpawnInterval;
         }
-        if (m_toSpawn == 0) {
-            m_idle         = true;
-            m_maxIdleTimer = kMaxIdleTime;
-            m_allDeadTimer = -1.f;
-        }
+        if (m_toSpawn == 0)
+            m_idle = true;
     } else {
-        m_maxIdleTimer -= dt;
-
         if (livingEnemies == 0 && m_allDeadTimer < 0.f)
             m_allDeadTimer = kAllDeadCooldown;
-        if (m_allDeadTimer >= 0.f)
-            m_allDeadTimer -= dt;
 
-        bool start = (m_maxIdleTimer <= 0.f) ||
-                     (m_allDeadTimer >= 0.f && m_allDeadTimer <= 0.f);
-        if (start) {
-            ++m_wave;
-            m_toSpawn      = m_wave;
-            m_spawnTimer   = 0.f;
-            m_idle         = false;
-            m_allDeadTimer = -1.f;
+        if (m_allDeadTimer >= 0.f) {
+            m_allDeadTimer -= dt;
+            if (m_allDeadTimer <= 0.f) {
+                ++m_wave;
+                m_toSpawn      = m_wave;
+                m_spawnTimer   = 0.f;
+                m_idle         = false;
+                m_allDeadTimer = -1.f;
+            }
         }
     }
 

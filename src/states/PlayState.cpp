@@ -14,6 +14,8 @@
 #include "systems/AnimationSystem.hpp"
 #include "systems/SeparationSystem.hpp"
 #include "systems/ContactDamageSystem.hpp"
+#include "systems/ShootingSystem.hpp"
+#include "systems/ProjectileSystem.hpp"
 
 
 static const char* kPlayerTextures[8] = {
@@ -59,11 +61,13 @@ void PlayState::onEnter() {
     m_camera.setViewport(1280, 720);
 
     m_bgTexture = m_textures.get(kMapTexture);
-    if (m_bgTexture) {
-        m_textures.querySize(m_bgTexture, m_bgWidth, m_bgHeight);
-    }
 
     m_hpFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
+
+    SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormat(0, 10, 4, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_FillRect(surf, nullptr, SDL_MapRGBA(surf->format, 255, 220, 50, 255));
+    m_bulletTexture = SDL_CreateTextureFromSurface(m_ctx.renderer->handle(), surf);
+    SDL_FreeSurface(surf);
 
     spawnPlayer();
     buildSystems();
@@ -184,6 +188,12 @@ void PlayState::buildSystems() {
         std::make_unique<ContactDamageSystem>());
 
     m_systems.push_back(
+        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
+
+    m_systems.push_back(
+        std::make_unique<ProjectileSystem>());
+
+    m_systems.push_back(
         std::make_unique<AnimationSystem>());
 }
 
@@ -202,7 +212,6 @@ void PlayState::update(float dt) {
     m_dirSystem->update(m_registry, dt);
 
     if (auto* t = m_registry.tryGet<Transform>(m_player)) {
-        // m_camera.follow(t->pos, dt);
         const float padding = 32.f;
         const float minX = -640.f + padding;
         const float maxX =  640.f - padding;
@@ -218,7 +227,6 @@ void PlayState::update(float dt) {
             m_ctx.states->clear();
             return;
         }
-        // Miganie podczas nietykalnosci
         if (auto* sprite = m_registry.tryGet<SpriteComp>(m_player)) {
             sprite->visible = (hp->invulnTimer <= 0.f) ||
                               (std::fmod(hp->invulnTimer, 0.2f) > 0.1f);
@@ -240,15 +248,6 @@ void PlayState::update(float dt) {
 void PlayState::render(Renderer& renderer) {
     renderer.clear({40, 140, 40, 255});
     if (m_bgTexture) {
-        // fixed to the world
-        // centers the map at world coordinates (0, 0)
-
-        // SDL_Rect dst = m_camera.worldToScreen({0.f, 0.f}, m_bgWidth, m_bgHeight);
-        // renderer.drawTexture(m_bgTexture, nullptr, &dst);
-
-        // fixed to the screen
-        // fills the entire 1280x720 window regardless of where the player walks
-
         SDL_Rect screenDst = {0, 0, 1280, 720};
         renderer.drawTexture(m_bgTexture, nullptr, &screenDst);
     }

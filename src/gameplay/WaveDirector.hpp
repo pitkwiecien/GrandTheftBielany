@@ -1,19 +1,13 @@
 #pragma once
 #include "math/Math.hpp"
 
-
-// Steruje falami wrogów:
-// - fala N spawuje N wrogów, co 2 sekundy na krawędziach mapy
-// - kolejna fala startuje po 5 s od śmierci ostatniego wroga
-//   lub po kMaxIdleTime sekundach (cokolwiek nastąpi pierwsze)
+// obsluga fali przeciwnikow - fala N, spawnuje N wrogow, kazdy co 2 sekundy
+// kazda kolejna fala nastepuje po pokonaniu wrogow z poprzedniej (5s po jej zakonczeniu)
 class WaveDirector {
 public:
-    static constexpr float kSpawnInterval   = 2.f;  // s między kolejnymi spawnami w fali
-    static constexpr float kAllDeadCooldown = 5.f;  // s przerwy po wyczyszczeniu fali
-    static constexpr float kMaxIdleTime     = 30.f; // max s między falami
+    static constexpr float kSpawnInterval   = 2.f; // s miedzy spawnami w fali
+    static constexpr float kAllDeadCooldown = 5.f; // s przerwy po pokonaniu fali
 
-    // Wywołaj co klatkę. livingEnemies = aktualna liczba żywych wrogów na planszy.
-    // Zwraca liczbę wrogów do zespawnowania w tej klatce.
     int update(float dt, int livingEnemies);
 
     int  currentWave() const { return m_wave; }
@@ -26,6 +20,5 @@ private:
     int   m_toSpawn      = 1;
     float m_spawnTimer   = 0.f;
     bool  m_idle         = false;
-    float m_maxIdleTimer = 0.f;
     float m_allDeadTimer = -1.f;
 };
