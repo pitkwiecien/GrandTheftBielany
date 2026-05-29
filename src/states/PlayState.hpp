@@ -5,6 +5,7 @@
 #include "gameplay/Camera.hpp"
 #include "gameplay/WaveDirector.hpp"
 #include "math/Vec2.hpp"
+#include <SDL_ttf.h>
 #include <memory>
 #include <vector>
 
@@ -42,6 +43,7 @@ private:
     std::unique_ptr<RenderSystem>          m_renderSystem;
     std::unique_ptr<SpriteDirectionSystem> m_dirSystem;
     SDL_Texture* m_bgTexture = nullptr;
-    int m_bgWidth = 0;
+    int m_bgWidth  = 0;
     int m_bgHeight = 0;
+    TTF_Font*    m_hpFont   = nullptr;
 };

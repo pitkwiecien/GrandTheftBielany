@@ -1,4 +1,6 @@
 #include "states/PlayState.hpp"
+#include <cmath>
+#include <string>
 #include "core/Renderer.hpp"
 #include "resources/TextureManager.hpp"
 #include "resources/FontManager.hpp"
@@ -8,6 +10,8 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/SpriteDirectionSystem.hpp"
 #include "systems/AnimationSystem.hpp"
+#include "systems/SeparationSystem.hpp"
+#include "systems/ContactDamageSystem.hpp"
 #include "ecs/components/Transform.hpp"
 #include "ecs/components/Velocity.hpp"
 #include "ecs/components/PlayerTag.hpp"
@@ -15,6 +19,7 @@
 #include "ecs/components/DirectionComp.hpp"
 #include "ecs/components/EnemyTag.hpp"
 #include "ecs/components/Collider.hpp"
+#include "ecs/components/Health.hpp"
 #include "ecs/components/AnimationComp.hpp"
 #include "math/MathUtils.hpp"
 
@@ -65,6 +70,8 @@ void PlayState::onEnter() {
         m_textures.querySize(m_bgTexture, m_bgWidth, m_bgHeight);
     }
 
+    m_hpFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
+
     spawnPlayer();
     buildSystems();
 
@@ -107,6 +114,13 @@ void PlayState::spawnPlayer() {
     sprite.srcRect = {0, 0, 80, 80};
     sprite.w = 80;
     sprite.h = 80;
+
+    auto& col = m_registry.add<Collider>(m_player);
+    col.radius = 16.f;
+
+    auto& hp = m_registry.add<Health>(m_player);
+    hp.max     = 100.f;
+    hp.current = 100.f;
 }
 
 void PlayState::spawnWaveEnemy(Vec2 pos) {
@@ -116,7 +130,7 @@ void PlayState::spawnWaveEnemy(Vec2 pos) {
     t.pos = pos;
 
     auto& enemy = m_registry.add<EnemyTag>(e);
-    enemy.touchDamage = 1.f;
+    enemy.touchDamage = 10.f;
     enemy.xpReward    = 2.f;
 
     auto& vel = m_registry.add<Velocity>(e);
@@ -129,22 +143,27 @@ void PlayState::spawnWaveEnemy(Vec2 pos) {
 
     auto& col = m_registry.add<Collider>(e);
     col.radius = 28.f;
+
+    auto& hp = m_registry.add<Health>(e);
+    hp.max     = 20.f;
+    hp.current = 20.f;
 }
 
 Vec2 PlayState::findSpawnPos() {
-    static constexpr float kEnemyR  = 28.f;
+    static constexpr float kEnemyR   = 28.f;
     static constexpr int   kAttempts = 20;
+
+    auto* pt = m_registry.tryGet<Transform>(m_player);
+    auto* pc = m_registry.tryGet<Collider>(m_player);
 
     for (int i = 0; i < kAttempts; ++i) {
         Vec2 candidate = m_waveDirector.randomEdgePos();
-        bool clear = true;
-        m_registry.view<Transform, Collider>(
-            [&](Entity, Transform& tr, Collider& c) {
-                float minD = c.radius + kEnemyR;
-                if (Vec2::distanceSq(candidate, tr.pos) < minD * minD)
-                    clear = false;
-            });
-        if (clear) return candidate;
+        if (pt && pc) {
+            float minD = pc->radius + kEnemyR;
+            if (Vec2::distanceSq(candidate, pt->pos) < minD * minD)
+                continue;
+        }
+        return candidate;
     }
     return m_waveDirector.randomEdgePos();
 }
@@ -164,7 +183,13 @@ void PlayState::buildSystems() {
 
     m_systems.push_back(
         std::make_unique<MovementSystem>());
-    
+
+    m_systems.push_back(
+        std::make_unique<SeparationSystem>());
+
+    m_systems.push_back(
+        std::make_unique<ContactDamageSystem>());
+
     m_systems.push_back(
         std::make_unique<AnimationSystem>());
 }
@@ -195,6 +220,23 @@ void PlayState::update(float dt) {
         t->pos.y = MathUtils::clamp(t->pos.y, minY, maxY);
     }
 
+    if (auto* hp = m_registry.tryGet<Health>(m_player)) {
+        if (hp->dead) {
+            m_ctx.states->clear();
+            return;
+        }
+        // Miganie podczas nietykalnosci
+        if (auto* sprite = m_registry.tryGet<SpriteComp>(m_player)) {
+            sprite->visible = (hp->invulnTimer <= 0.f) ||
+                              (std::fmod(hp->invulnTimer, 0.2f) > 0.1f);
+        }
+    }
+
+    m_registry.view<EnemyTag, Health>(
+        [&](Entity e, EnemyTag&, Health& hp) {
+            if (hp.dead) m_registry.queueDestroy(e);
+        });
+
     int toSpawn = m_waveDirector.update(dt, countLivingEnemies());
     for (int i = 0; i < toSpawn; ++i)
         spawnWaveEnemy(findSpawnPos());
@@ -218,4 +260,26 @@ void PlayState::render(Renderer& renderer) {
         renderer.drawTexture(m_bgTexture, nullptr, &screenDst);
     }
     m_renderSystem->render(m_registry);
+
+    if (m_hpFont) {
+        auto* hp = m_registry.tryGet<Health>(m_player);
+        if (hp) {
+            std::string text = "HP: " + std::to_string(static_cast<int>(hp->current)) + " / 100";
+
+            // tekst
+            SDL_Color white{255, 255, 255, 255};
+            SDL_Surface* surf = TTF_RenderUTF8_Blended(m_hpFont, text.c_str(), white);
+            if (surf) {
+                SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer.handle(), surf);
+                SDL_FreeSurface(surf);
+                if (tex) {
+                    int tw, th;
+                    SDL_QueryTexture(tex, nullptr, nullptr, &tw, &th);
+                    SDL_Rect dst{10, 10, tw, th};
+                    SDL_RenderCopy(renderer.handle(), tex, nullptr, &dst);
+                    SDL_DestroyTexture(tex);
+                }
+            }
+        }
+    }
 }
