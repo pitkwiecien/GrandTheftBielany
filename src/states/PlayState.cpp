@@ -166,8 +166,8 @@ void PlayState::spawnBeer(Vec2 pos) {
 
     auto& sprite = m_registry.add<SpriteComp>(e);
     sprite.texture = m_beerTexture;
-    sprite.w = 32;
-    sprite.h = 32;
+    sprite.w = 48;
+    sprite.h = 48;
 }
 
 Vec2 PlayState::findSpawnPos() {
