@@ -28,7 +28,6 @@ class Game {
         StateMachine m_states;
         bool m_running = true;
 
-        // Stały krok logiki (akumulator), max klatka by uniknąć spirali śmierci.
         static constexpr float kFixedDt = 1.f / 60.f;
         static constexpr float kMaxFrame = 0.25f;
 };
