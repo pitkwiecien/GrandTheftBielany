@@ -3,10 +3,7 @@
 #include <stdexcept>
 
 Renderer::Renderer(Window& window) {
-    m_renderer = SDL_CreateRenderer(
-        window.handle(), -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
+    m_renderer = SDL_CreateRenderer(window.handle(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!m_renderer)
         throw std::runtime_error(SDL_GetError());
 }
@@ -24,12 +21,8 @@ void Renderer::present() {
     SDL_RenderPresent(m_renderer);
 }
 
-void Renderer::drawTexture(SDL_Texture* texture,
-                            const SDL_Rect* src,
-                            const SDL_Rect* dst,
-                            double angleDeg) {
-    SDL_RenderCopyEx(m_renderer, texture, src, dst,
-                     angleDeg, nullptr, SDL_FLIP_NONE);
+void Renderer::drawTexture(SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst, double angleDeg) {
+    SDL_RenderCopyEx(m_renderer, texture, src, dst, angleDeg, nullptr, SDL_FLIP_NONE);
 }
 
 void Renderer::drawRect(const SDL_Rect& rect, SDL_Color c, bool filled) {

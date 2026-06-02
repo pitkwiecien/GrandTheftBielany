@@ -16,12 +16,9 @@ public:
     void clear(SDL_Color color);
     void present();
 
-    // Rysuje teksturę. src == nullptr => cała tekstura.
-    // angleDeg => obrót wokół środka dst (przydatne dla pocisków).
-    void drawTexture(SDL_Texture*   texture,
-                      const SDL_Rect* src,
-                      const SDL_Rect* dst,
-                      double          angleDeg = 0.0);
+    // Rysuje teksturę. src == nullptr -> cała tekstura.
+    // angleDeg => obrót wokół środka dst (do pociskow).
+    void drawTexture(SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst, double angleDeg = 0.0);
 
     void drawRect(const SDL_Rect& rect, SDL_Color color, bool filled);
     void drawLine(int x1, int y1, int x2, int y2, SDL_Color color);

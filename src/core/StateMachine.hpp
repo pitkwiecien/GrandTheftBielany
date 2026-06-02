@@ -6,25 +6,21 @@
 class GameState;
 class Renderer;
 
-// Stos stanów. Pozwala nakładać stany przezroczyste
-// (np. LevelUpState na PlayState) bez gubienia gry pod spodem.
+// Stos stanów, pozwala nakładać stany przezroczyste (np. LevelUpState na PlayState)
 class StateMachine {
 public:
     StateMachine();
-    ~StateMachine();   // zdefiniowany w .cpp, gdzie GameState jest kompletny
+    ~StateMachine();
 
     void push(std::unique_ptr<GameState> state);
     void pop();
     void replace(std::unique_ptr<GameState> state);
     void clear();
-
-    // Wykonuje odłożone operacje (push/pop) — wywoływać raz na klatkę,
-    // poza pętlą iteracji po stanach, żeby uniknąć inwalidacji.
+    // wykonanie odlozonych operacji (push/pop)
     void applyPending();
-
     bool empty() const { return m_states.empty(); }
 
-    // Przekazuje zdarzenie/update/render z uwzględnieniem przezroczystości.
+    // przekazuje zdarzenie/update/render z uwzględnieniem przezroczystości.
     void handleEvent(const SDL_Event& e);
     void update(float dt);
     void render(Renderer& renderer);

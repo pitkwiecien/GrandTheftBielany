@@ -4,9 +4,9 @@
 
 static Direction8 vecToDir8(float vx, float vy) {
     float angle = std::atan2(vy, vx);
-    if (angle < 0.f) angle += 2.f * 3.14159265f;
+    if (angle < 0.f) angle += 2.f * 3.141f;
 
-    constexpr float kStep = 3.14159265f / 4.f;
+    constexpr float kStep = 3.141f / 4.f;
     int s = static_cast<int>((angle + kStep * 0.5f) / kStep) % 8;
 
     switch (s) {
@@ -23,15 +23,12 @@ static Direction8 vecToDir8(float vx, float vy) {
 }
 
 static bool facingRight(Direction8 d) {
-    return d == Direction8::East
-        || d == Direction8::NorthEast
-        || d == Direction8::SouthEast;
+    return d == Direction8::East || d == Direction8::NorthEast || d == Direction8::SouthEast;
 }
 
 void SpriteDirectionSystem::update(Registry& reg, float /*dt*/) {
 reg.view<Velocity, DirectionComp, SpriteComp>(
-        [&](Entity e, Velocity& vel, DirectionComp& dir, SpriteComp& sprite)
-    {
+        [&](Entity e, Velocity& vel, DirectionComp& dir, SpriteComp& sprite) {
         bool isAiming = false;
         if (auto* playerTag = reg.tryGet<PlayerTag>(e)) {
             isAiming = playerTag->isAiming;
@@ -46,9 +43,11 @@ reg.view<Velocity, DirectionComp, SpriteComp>(
         SDL_Texture* tex = nullptr;
         if (isAiming) {
             tex = dir.aimTextures[static_cast<int>(dir.facing)];
-        } else if (isMoving) {
+        }
+        else if (isMoving) {
             tex = dir.runTextures[static_cast<int>(dir.facing)];
-        } else {
+        }
+        else {
             tex = dir.idleTextures[static_cast<int>(dir.facing)];
         }
 
@@ -62,10 +61,7 @@ reg.view<Velocity, DirectionComp, SpriteComp>(
     });
 
     reg.view<Velocity, SpriteComp>(
-        [&](Entity e,
-            Velocity& vel,
-            SpriteComp& sprite)
-    {
+        [&](Entity e, Velocity& vel, SpriteComp& sprite) {
         if (reg.has<DirectionComp>(e))
             return;
 

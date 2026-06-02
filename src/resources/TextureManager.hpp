@@ -5,19 +5,14 @@
 
 class Renderer;
 
-// Cache SDL_Texture*. Tekstury są własnością managera —
-// kod gry NIGDY ich nie zwalnia, tylko pożycza wskaźnik.
+// cache SDL_Texture*, tekstury są własnością managera
 class TextureManager {
-public:
-    TextureManager(Renderer& renderer);
-    ~TextureManager();
+    public:
+        TextureManager(Renderer& renderer);
+        ~TextureManager();
 
-    TextureManager(const TextureManager&) = delete;
-
-    SDL_Texture* get(const std::string& path);
-    void clear();
-
-private:
-    Renderer& m_renderer;
-    std::unordered_map<std::string, SDL_Texture*> m_cache;
+        SDL_Texture* get(const std::string& path);
+    private:
+        Renderer& m_renderer;
+        std::unordered_map<std::string, SDL_Texture*> m_cache;
 };

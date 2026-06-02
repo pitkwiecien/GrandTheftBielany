@@ -3,9 +3,9 @@
 #include "ecs/Entity.hpp"
 
 class EnemyAISystem : public ISystem {
-public:
-    void update(Registry& reg, float dt) override;
+    public:
+        void update(Registry& reg, float dt) override;
 
-private:
-    Entity findPlayer(Registry& reg) const;
+    private:
+        Entity findPlayer(Registry& reg) const;
 };

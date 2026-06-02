@@ -1,11 +1,8 @@
 #include "StateMachine.hpp"
-#include "GameState.hpp"   // pełna definicja — kluczowe dla unique_ptr<GameState>
+#include "GameState.hpp"
 
-// Konstruktor i destruktor MUSZĄ być tutaj (nie w nagłówku),
-// bo to tu GameState jest typem kompletnym i unique_ptr
-// może wygenerować poprawny kod niszczący stany.
-StateMachine::StateMachine()  = default;
-StateMachine::~StateMachine() = default;
+StateMachine::StateMachine()  =default;
+StateMachine::~StateMachine() =default;
 
 void StateMachine::push(std::unique_ptr<GameState> state) {
     m_pending = std::move(state);
@@ -32,16 +29,13 @@ void StateMachine::applyPending() {
             m_states.push_back(std::move(m_pending));
             m_states.back()->onEnter();
             break;
-
         case Action::Pop:
             if (!m_states.empty()) {
                 m_states.back()->onExit();
                 m_states.pop_back();
-                if (!m_states.empty())
-                    m_states.back()->onEnter();
+                if (!m_states.empty()) m_states.back()->onEnter();
             }
             break;
-
         case Action::Replace:
             if (!m_states.empty()) {
                 m_states.back()->onExit();
@@ -50,15 +44,12 @@ void StateMachine::applyPending() {
             m_states.push_back(std::move(m_pending));
             m_states.back()->onEnter();
             break;
-
         case Action::Clear:
             while (!m_states.empty()) {
                 m_states.back()->onExit();
                 m_states.pop_back();
             }
             break;
-
-        case Action::None:
         default:
             break;
     }
@@ -81,10 +72,7 @@ void StateMachine::render(Renderer& renderer) {
 
     // Znajdź najniższy stan, od którego trzeba zacząć rysowanie:
     // stany przezroczyste (pauza, level-up) pokazują to, co pod nimi.
-    std::size_t start = m_states.size() - 1;
-    while (start > 0 && m_states[start]->isTransparent())
-        --start;
-
-    for (std::size_t i = start; i < m_states.size(); ++i)
-        m_states[i]->render(renderer);
+    int start = static_cast<int>(m_states.size()) - 1;
+    while (start > 0 && m_states[start]->isTransparent()) start--;
+    for (int i = start; i < static_cast<int>(m_states.size()); ++i) m_states[i]->render(renderer);
 }

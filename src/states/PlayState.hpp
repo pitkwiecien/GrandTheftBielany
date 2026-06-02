@@ -17,38 +17,37 @@ class TextureManager;
 class FontManager;
 
 class PlayState : public GameState {
-public:
-    PlayState(StateContext ctx, TextureManager& textures, FontManager& fonts);
-    ~PlayState();
-    void onEnter() override;
-    void handleEvent(const SDL_Event& e) override;
-    void update(float dt) override;
-    void render(Renderer& renderer) override;
+    public:
+        PlayState(StateContext ctx, TextureManager& textures, FontManager& fonts);
+        ~PlayState();
+        void onEnter() override;
+        void handleEvent(const SDL_Event& e) override;
+        void update(float dt) override;
+        void render(Renderer& renderer) override;
 
-private:
-    void spawnPlayer();
-    void buildSystems();
-    void spawnWaveEnemy(Vec2 pos);
-    void spawnBeer(Vec2 pos);
-    Vec2 findSpawnPos();
-    int  countLivingEnemies();
-
-private:
-    StateContext    m_ctx;
-    TextureManager& m_textures;
-    FontManager&    m_fonts;
-    Registry        m_registry;
-    Entity          m_player = kNullEntity;
-    Camera          m_camera;
-    WaveDirector    m_waveDirector;
-    std::vector<std::unique_ptr<ISystem>> m_systems;
-    std::unique_ptr<RenderSystem>          m_renderSystem;
-    std::unique_ptr<SpriteDirectionSystem> m_dirSystem;
-    SDL_Texture* m_bgTexture     = nullptr;
-    SDL_Texture* m_bulletTexture = nullptr;
-    SDL_Texture* m_beerTexture   = nullptr;
-    TTF_Font*    m_hpFont        = nullptr;
-    TTF_Font*    m_waveFont      = nullptr;
-    float        m_waveAnnounceTimer = 0.f;
-    int          m_lastAnnouncedWave  = 0;
+    private:
+        void spawnPlayer();
+        void buildSystems();
+        void spawnWaveEnemy(Vec2 pos);
+        void spawnBeer(Vec2 pos);
+        Vec2 findSpawnPos();
+        int countLivingEnemies();
+        
+        StateContext m_ctx;
+        TextureManager& m_textures;
+        FontManager& m_fonts;
+        Registry m_registry;
+        Entity m_player{};
+        Camera m_camera;
+        WaveDirector m_waveDirector;
+        std::vector<std::unique_ptr<ISystem>> m_systems;
+        std::unique_ptr<RenderSystem> m_renderSystem;
+        std::unique_ptr<SpriteDirectionSystem> m_dirSystem;
+        SDL_Texture* m_bgTexture = nullptr;
+        SDL_Texture* m_bulletTexture = nullptr;
+        SDL_Texture* m_beerTexture = nullptr;
+        TTF_Font* m_hpFont = nullptr;
+        TTF_Font* m_waveFont = nullptr;
+        float m_waveAnnounceTimer = 0.f;
+        int m_lastAnnouncedWave = 0;
 };

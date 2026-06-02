@@ -17,7 +17,7 @@ struct Health {
     float current = 1.f;
     float max = 1.f;
     float invulnTimer = 0.f;
-    bool  dead = false;
+    bool dead = false;
 
     bool damage(float amount, bool isCrit = false) {
         if (invulnTimer > 0.f || dead) return false;
@@ -59,8 +59,14 @@ struct SpriteComp {
 };
 
 enum Direction8 {
-    North = 0, NorthEast, East, SouthEast,
-    South, SouthWest, West, NorthWest
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest
 };
 
 struct DirectionComp {

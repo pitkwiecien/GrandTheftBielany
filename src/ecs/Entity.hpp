@@ -1,19 +1,10 @@
 #pragma once
-#include <cstdint>
+#include <limits>
 
-// Encja to lekki identyfikator. Wersja (generation) chroni
-// przed użyciem nieaktualnego uchwytu po recyklingu indeksu.
 struct Entity {
-    std::uint32_t id  = kInvalidId;
-    std::uint32_t gen = 0;
-
-    static constexpr std::uint32_t kInvalidId = 0xFFFFFFFF;
+    static constexpr unsigned int kInvalidId = std::numeric_limits<unsigned int>::max();
+    unsigned int id = kInvalidId;
 
     bool valid() const { return id != kInvalidId; }
-
-    bool operator==(const Entity& o) const {
-        return id == o.id && gen == o.gen;
-    }
+    bool operator==(const Entity& o) const { return id == o.id; }
 };
-
-inline constexpr Entity kNullEntity{};

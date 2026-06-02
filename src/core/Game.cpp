@@ -6,7 +6,6 @@ Game::Game()
       m_window("Grand Theft Bielany", 1280, 720),
       m_renderer(m_window),
       m_input(),
-      m_timer(),
       m_textures(m_renderer),
       m_fonts(),
       m_states(),
@@ -36,7 +35,6 @@ void Game::processEvents() {
 
         if (e.type == SDL_QUIT)
             m_running = false;
-
         m_input.handleEvent(e);
         m_states.handleEvent(e);
     }
@@ -64,10 +62,19 @@ void Game::render() {
 
 void Game::run() {
     float accumulator = 0.0f;
-    m_timer.tick();
+
+    // stała dla danego uruchomienia
+    unsigned long long freq = SDL_GetPerformanceFrequency();
+
+    unsigned long long last = SDL_GetPerformanceCounter();
 
     while (m_running) {
-        float dt = m_timer.tick();
+        // czas klatki w sekundach.
+        unsigned long long now = SDL_GetPerformanceCounter();
+        float dt = static_cast<float>(now - last) / static_cast<float>(freq);
+        last = now;
+
+        // ograniczenie dt (unikniecie wykonania wiekszej ilosci klatek naraz)
         if (dt > kMaxFrame)
             dt = kMaxFrame;
         accumulator += dt;

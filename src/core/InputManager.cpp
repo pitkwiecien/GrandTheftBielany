@@ -18,8 +18,7 @@ void InputManager::handleEvent(const SDL_Event& e) {
     } else if (e.type == SDL_KEYUP) {
         m_released[e.key.keysym.scancode] = true;
     } else if (e.type == SDL_MOUSEMOTION) {
-        m_mousePos = {static_cast<float>(e.motion.x),
-                      static_cast<float>(e.motion.y)};
+        m_mousePos = {static_cast<float>(e.motion.x), static_cast<float>(e.motion.y)};
     } else if (e.type == SDL_MOUSEBUTTONDOWN) {
         m_mouseClicked |= SDL_BUTTON(e.button.button);
     }
@@ -38,10 +37,10 @@ bool InputManager::wasReleased(SDL_Scancode key) const {
     return m_released[key];
 }
 
-bool InputManager::mouseDown(Uint8 button) const {
+bool InputManager::mouseDown(int button) const {
     return (m_mouseState & SDL_BUTTON(button)) != 0;
 }
 
-bool InputManager::mouseClicked(Uint8 button) const {
+bool InputManager::mouseClicked(int button) const {
     return (m_mouseClicked & SDL_BUTTON(button)) != 0;
 }

@@ -3,7 +3,7 @@
 #include "ecs/Components.hpp"
 
 void PickupSystem::update(Registry& registry, float) {
-    Entity playerEntity = kNullEntity;
+    Entity playerEntity{};
 
     registry.view<PlayerTag, Transform>(
         [&](Entity entity, PlayerTag&, Transform&) {
@@ -23,8 +23,7 @@ void PickupSystem::update(Registry& registry, float) {
 
     registry.view<BeerPickup, Transform>(
         [&](Entity entity, BeerPickup& beerPickup, Transform& transform) {
-            float distance =
-                Vec2::distance(playerTransform->pos, transform.pos);
+            float distance = Vec2::distance(playerTransform->pos, transform.pos);
 
             if (distance < beerPickup.radius + 16.f) {
                 playerHealth->heal(beerPickup.healAmount);

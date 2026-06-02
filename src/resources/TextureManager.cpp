@@ -5,7 +5,8 @@
 TextureManager::TextureManager(Renderer& renderer) : m_renderer(renderer) {}
 
 TextureManager::~TextureManager() {
-    clear();
+    for (auto& [path, tex] : m_cache)
+        SDL_DestroyTexture(tex);
 }
 
 SDL_Texture* TextureManager::get(const std::string& path) {
@@ -15,10 +16,4 @@ SDL_Texture* TextureManager::get(const std::string& path) {
     SDL_Texture* tex = IMG_LoadTexture(m_renderer.handle(), path.c_str());
     if (tex) m_cache[path] = tex;
     return tex;
-}
-
-void TextureManager::clear() {
-    for (auto& [path, tex] : m_cache)
-        SDL_DestroyTexture(tex);
-    m_cache.clear();
 }

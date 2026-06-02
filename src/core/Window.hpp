@@ -2,14 +2,11 @@
 #include <SDL.h>
 #include <string>
 
-// Owija SDL_Window. Niekopiowalny (właściciel zasobu).
+// owija SDL_Window
 class Window {
 public:
     Window(const std::string& title, int width, int height);
     ~Window();
-
-    Window(const Window&)            = delete;
-    Window& operator=(const Window&) = delete;
 
     SDL_Window* handle() const { return m_window; }
     int width()  const { return m_width; }

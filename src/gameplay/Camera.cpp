@@ -5,6 +5,7 @@ void Camera::setViewport(int w, int h) {
     vh = h;
 }
 
+// przelicza wspolrzedne obiektu na faktyczne wspolrzedne na ekranie
 SDL_Rect Camera::worldToScreen(Vec2 worldPos, int w, int h) const {
     int sx = static_cast<int>(worldPos.x - m_center.x + vw * 0.5f);
     int sy = static_cast<int>(worldPos.y - m_center.y + vh * 0.5f);

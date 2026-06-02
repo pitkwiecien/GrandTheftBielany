@@ -16,8 +16,7 @@ static const Vec2 kDirs[8] = {
     {-0.707f,  -0.707f }, // NW
 };
 
-// Obrót w stopniach dla SDL_RenderCopyEx (0° = prawo/East, rosnące = CW).
-// Zakładamy że tekstura naboju wskazuje na prawo (East).
+// Obrót w stopniach dla SDL_RenderCopyEx (0 = prawo/East, rosnące = CW)
 static const double kRotations[8] = {
     270.0, // N
     315.0, // NE
@@ -31,8 +30,7 @@ static const double kRotations[8] = {
 
 ShootingSystem::ShootingSystem(const InputManager& input, SDL_Texture* bulletTex)
     : m_input(input), m_bulletTex(bulletTex) {
-    if (bulletTex)
-        SDL_QueryTexture(bulletTex, nullptr, nullptr, &m_texW, &m_texH);
+    if (bulletTex) SDL_QueryTexture(bulletTex, nullptr, nullptr, &m_texW, &m_texH);
 }
 
 void ShootingSystem::update(Registry& reg, float dt) {

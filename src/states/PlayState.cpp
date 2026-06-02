@@ -54,24 +54,17 @@ static const char* kPlayerAimTextures[8] = {
 };
 
 static constexpr const char* kBoarTexture = "assets/textures/boar/south.png";
-static constexpr const char* kMapTexture        = "assets/textures/maps/map1_m.png";
-static constexpr const char* kBeerTexture       = "assets/textures/beer/beer.png";
-static constexpr const char* kBulletTexture     = "assets/textures/projectile/projectile.png";
+static constexpr const char* kMapTexture = "assets/textures/maps/map1_m.png";
+static constexpr const char* kBeerTexture = "assets/textures/beer/beer.png";
+static constexpr const char* kBulletTexture = "assets/textures/projectile/projectile.png";
 
-PlayState::PlayState(
-    StateContext ctx,
-    TextureManager& textures,
-    FontManager& fonts)
-    : m_ctx(ctx),
-      m_textures(textures),
-      m_fonts(fonts)
-{}
+PlayState::PlayState(StateContext ctx, TextureManager& textures, FontManager& fonts)
+    : m_ctx(ctx), m_textures(textures), m_fonts(fonts) {}
 
-PlayState::~PlayState() = default;
+PlayState::~PlayState() =default;
 
 void PlayState::onEnter() {
     m_camera.setViewport(1280, 720);
-
     m_bgTexture     = m_textures.get(kMapTexture);
     m_beerTexture   = m_textures.get(kBeerTexture);
     m_bulletTexture = m_textures.get(kBulletTexture);
@@ -192,37 +185,27 @@ int PlayState::countLivingEnemies() {
 }
 
 void PlayState::buildSystems() {
-    m_systems.push_back(
-        std::make_unique<PlayerInputSystem>(*m_ctx.input, 220.f));
+    m_systems.push_back(std::make_unique<PlayerInputSystem>(*m_ctx.input, 220.f));
 
-    m_systems.push_back(
-        std::make_unique<EnemyAISystem>());
+    m_systems.push_back(std::make_unique<EnemyAISystem>());
 
-    m_systems.push_back(
-        std::make_unique<MovementSystem>());
+    m_systems.push_back(std::make_unique<MovementSystem>());
 
-    m_systems.push_back(
-        std::make_unique<SeparationSystem>());
+    m_systems.push_back(std::make_unique<SeparationSystem>());
 
-    m_systems.push_back(
-        std::make_unique<ContactDamageSystem>());
+    m_systems.push_back(std::make_unique<ContactDamageSystem>());
 
-    m_systems.push_back(
-        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
+    m_systems.push_back(std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
 
-    m_systems.push_back(
-        std::make_unique<ProjectileSystem>());
+    m_systems.push_back(std::make_unique<ProjectileSystem>());
 
-    m_systems.push_back(
-        std::make_unique<PickupSystem>());
+    m_systems.push_back(std::make_unique<PickupSystem>());
 
-    m_systems.push_back(
-        std::make_unique<AnimationSystem>());
+    m_systems.push_back(std::make_unique<AnimationSystem>());
 }
 
 void PlayState::handleEvent(const SDL_Event& e) {
-    if (e.type == SDL_KEYDOWN &&
-        e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+    if (e.type == SDL_KEYDOWN && e.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
     {
         m_ctx.states->clear();
     }
@@ -253,8 +236,7 @@ void PlayState::update(float dt) {
             return;
         }
         if (auto* sprite = m_registry.tryGet<SpriteComp>(m_player)) {
-            sprite->visible = (hp->invulnTimer <= 0.f) ||
-                              (std::fmod(hp->invulnTimer, 0.2f) > 0.1f);
+            sprite->visible = (hp->invulnTimer <= 0.f) || (std::fmod(hp->invulnTimer, 0.2f) > 0.1f);
         }
     }
 
@@ -269,21 +251,18 @@ void PlayState::update(float dt) {
         });
 
     int toSpawn = m_waveDirector.update(dt, countLivingEnemies());
-    for (int i = 0; i < toSpawn; ++i)
-        spawnWaveEnemy(findSpawnPos());
+    for (int i = 0; i < toSpawn; ++i) spawnWaveEnemy(findSpawnPos());
 
     int wave = m_waveDirector.currentWave();
     if (wave != m_lastAnnouncedWave) {
         m_lastAnnouncedWave = wave;
         m_waveAnnounceTimer = 3.f;
     }
-    if (m_waveAnnounceTimer > 0.f)
-        m_waveAnnounceTimer -= dt;
+    if (m_waveAnnounceTimer > 0.f) m_waveAnnounceTimer -= dt;
 
     m_registry.flushDestroyed();
 
-    for (auto& pos : beerSpawnPositions)
-        spawnBeer(pos);
+    for (auto& pos : beerSpawnPositions) spawnBeer(pos);
 }
 
 void PlayState::render(Renderer& renderer) {
@@ -296,9 +275,7 @@ void PlayState::render(Renderer& renderer) {
 
     if (m_waveFont && m_waveAnnounceTimer > 0.f) {
         std::string text = "Wave " + std::to_string(m_lastAnnouncedWave);
-        Uint8 alpha = (m_waveAnnounceTimer >= 0.5f)
-            ? 255
-            : static_cast<Uint8>(255.f * m_waveAnnounceTimer / 0.5f);
+        int alpha = (m_waveAnnounceTimer >= 0.5f) ? 255 : static_cast<int>(255.f * m_waveAnnounceTimer / 0.5f);
 
         auto drawWaveText = [&](int ox, int oy, SDL_Color col) {
             col.a = alpha;

@@ -1,16 +1,8 @@
 #pragma once
 
-// RAII na inicjalizację bibliotek SDL: SDL, SDL_image,
-// SDL_ttf, SDL_mixer. Tworzony raz, jako pierwsze pole Game.
-// Konstruktor rzuca std::runtime_error przy błędzie inicjalizacji.
+// inicjalizacja bibliotek SDL: SDL, SDL_image, SDL_ttf; tworzony raz, jako pierwsze pole Game.
 class SDLContext {
 public:
     SDLContext();
     ~SDLContext();
-
-    SDLContext(const SDLContext&)            = delete;
-    SDLContext& operator=(const SDLContext&) = delete;
-
-private:
-    bool m_audioOpen = false;
 };

@@ -2,10 +2,10 @@
 #include "systems/ISystem.hpp"
 
 class ProjectileSystem : public ISystem {
-public:
-    void update(Registry& reg, float dt) override;
+    public:
+        void update(Registry& reg, float dt) override;
 
-private:
-    static constexpr float kBulletRadius = 4.f;
-    static constexpr float kCritChance   = 0.05f;
+    private:
+        static constexpr float kBulletRadius = 4.f;
+        static constexpr float kCritChance = 0.05f;
 };

@@ -6,9 +6,7 @@
 #include <string>
 
 EndState::EndState(StateContext ctx, TextureManager& textures, FontManager& fonts, int finalWave)
-    : m_ctx(ctx), m_textures(textures), m_fonts(fonts), m_finalWave(finalWave)
-{
-}
+    : m_ctx(ctx), m_textures(textures), m_fonts(fonts), m_finalWave(finalWave) {}
 
 void EndState::onEnter() {
     m_titleFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 64);
@@ -26,8 +24,7 @@ void EndState::onEnter() {
 }
 
 bool EndState::hitTest(int px, int py, const SDL_Rect& rect) {
-    return px >= rect.x && px < rect.x + rect.w &&
-           py >= rect.y && py < rect.y + rect.h;
+    return px >= rect.x && px < rect.x + rect.w && py >= rect.y && py < rect.y + rect.h;
 }
 
 void EndState::handleEvent(const SDL_Event& event) {
@@ -65,7 +62,7 @@ void EndState::render(Renderer& renderer) {
         if (!font) {
             return;
         }
-
+        
         SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
         if (!surface) {
             return;
@@ -86,31 +83,16 @@ void EndState::render(Renderer& renderer) {
     };
 
     std::string scoreText = "You reached wave " + std::to_string(m_finalWave);
-    drawCentered(
-        m_scoreFont,
-        scoreText,
-        {255, 255, 255, 255},
-        520
-    );
+    drawCentered(m_scoreFont, scoreText, {255, 255, 255, 255}, 520);
 
-    auto drawButton = [&](const SDL_Rect& rect,
-                          SDL_Color backgroundColor,
-                          bool isHovered,
-                          const std::string& label) {
+    auto drawButton = [&](const SDL_Rect& rect, SDL_Color backgroundColor, bool isHovered, const std::string& label) {
         if (isHovered) {
-            backgroundColor.r = static_cast<Uint8>(backgroundColor.r * 0.75f);
-            backgroundColor.g = static_cast<Uint8>(backgroundColor.g * 0.75f);
-            backgroundColor.b = static_cast<Uint8>(backgroundColor.b * 0.75f);
+            backgroundColor.r = static_cast<unsigned char>(backgroundColor.r * 0.75f);
+            backgroundColor.g = static_cast<unsigned char>(backgroundColor.g * 0.75f);
+            backgroundColor.b = static_cast<unsigned char>(backgroundColor.b * 0.75f);
         }
 
-        SDL_SetRenderDrawColor(
-            renderer.handle(),
-            backgroundColor.r,
-            backgroundColor.g,
-            backgroundColor.b,
-            255
-        );
-
+        SDL_SetRenderDrawColor(renderer.handle(), backgroundColor.r, backgroundColor.g, backgroundColor.b, 255);
         SDL_RenderFillRect(renderer.handle(), &rect);
         SDL_SetRenderDrawColor(renderer.handle(), 255, 255, 255, 255);
         SDL_RenderDrawRect(renderer.handle(), &rect);
@@ -137,14 +119,7 @@ void EndState::render(Renderer& renderer) {
 
         int textWidth;
         int textHeight;
-
-        SDL_QueryTexture(
-            texture,
-            nullptr,
-            nullptr,
-            &textWidth,
-            &textHeight
-        );
+        SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
 
         SDL_Rect destinationRect{
             rect.x + (rect.w - textWidth) / 2,
@@ -152,22 +127,10 @@ void EndState::render(Renderer& renderer) {
             textWidth,
             textHeight
         };
-
         SDL_RenderCopy(renderer.handle(), texture, nullptr, &destinationRect);
         SDL_DestroyTexture(texture);
     };
 
-    drawButton(
-        m_playAgainRect,
-        {34, 139, 34, 255},
-        m_hoverPlayAgain,
-        "Play Again"
-    );
-
-    drawButton(
-        m_exitRect,
-        {180, 30, 30, 255},
-        m_hoverExit,
-        "Exit"
-    );
+    drawButton( m_playAgainRect,{34, 139, 34, 255}, m_hoverPlayAgain, "Play Again");
+    drawButton(m_exitRect, {180, 30, 30, 255}, m_hoverExit, "Exit");
 }

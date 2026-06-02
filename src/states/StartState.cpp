@@ -5,9 +5,7 @@
 #include "resources/FontManager.hpp"
 
 StartState::StartState(StateContext ctx, TextureManager& textures, FontManager& fonts)
-    : m_ctx(ctx), m_textures(textures), m_fonts(fonts)
-{
-}
+    : m_ctx(ctx), m_textures(textures), m_fonts(fonts) {}
 
 void StartState::onEnter() {
     m_bgTexture = m_textures.get("assets/textures/screens/title_1080.png");

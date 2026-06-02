@@ -4,8 +4,7 @@
 
 void AnimationSystem::update(Registry& reg, float dt) {
     reg.view<AnimationComp, SpriteComp>(
-        [&](Entity e, AnimationComp& anim, SpriteComp& sprite) 
-    {
+        [&](Entity e, AnimationComp& anim, SpriteComp& sprite) {
         // don't animate if stopped
         if (!anim.isPlaying) {
             anim.currentFrame = 0;

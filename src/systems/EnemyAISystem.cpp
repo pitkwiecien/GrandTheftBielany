@@ -5,7 +5,7 @@
 #include <cmath>
 
 Entity EnemyAISystem::findPlayer(Registry& reg) const {
-    Entity found = kNullEntity;
+    Entity found{};
     reg.view<PlayerTag, Transform>([&](Entity e, PlayerTag&, Transform&) {
         found = e;
     });
@@ -24,8 +24,7 @@ void EnemyAISystem::update(Registry& reg, float dt) {
 
     reg.view<EnemyTag, Transform, Velocity>(
         [&](Entity e, EnemyTag&, Transform& t, Velocity& vel) {
-            
-            // 1. Calculate true 360-degree direction to the player
+            // Calculate true 360-degree direction to the player
             Vec2 toPlayer = pt->pos - t.pos;
             float dist = toPlayer.length();
             
@@ -34,7 +33,7 @@ void EnemyAISystem::update(Registry& reg, float dt) {
                 desiredDir = toPlayer / dist;
             }
 
-            // 2. Apply Organic Wobble (Anti-stacking)
+            // Apply Organic Wobble (Anti-stacking)
             // Get the perpendicular vector to the target direction
             Vec2 perp{-desiredDir.y, desiredDir.x};
             
@@ -45,10 +44,10 @@ void EnemyAISystem::update(Registry& reg, float dt) {
             // Blend the direct pursuit with the side-to-side wobble
             desiredDir = (desiredDir + perp * wobbleAmount).normalized();
 
-            // 3. Calculate intended target speed
+            // Calculate intended target speed
             Vec2 targetVel = desiredDir * vel.maxSpeed;
 
-            // 4. Apply Heavy Inertia
+            // Apply Heavy Inertia
             // A lower value makes the boar turn slower (larger turning circle). 
             // 2.5f is a sweet spot for making them feel like a charging animal.
             float turnSpeed = 2.5f; 

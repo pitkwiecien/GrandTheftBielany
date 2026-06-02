@@ -4,7 +4,7 @@
 #include <vector>
 #include <cmath>
 
-void SeparationSystem::update(Registry& reg, float /*dt*/) {
+void SeparationSystem::update(Registry& reg, float dt) {
     struct Entry { Transform* t; float radius; };
     std::vector<Entry> enemies;
 
@@ -13,8 +13,9 @@ void SeparationSystem::update(Registry& reg, float /*dt*/) {
             enemies.push_back({&t, c.radius});
         });
 
-    for (std::size_t i = 0; i < enemies.size(); ++i) {
-        for (std::size_t j = i + 1; j < enemies.size(); ++j) {
+    int n = static_cast<int>(enemies.size());
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
             auto& a = enemies[i];
             auto& b = enemies[j];
 
