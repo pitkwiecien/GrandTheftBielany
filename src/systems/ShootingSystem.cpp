@@ -2,6 +2,7 @@
 #include "core/InputManager.hpp"
 #include "ecs/Registry.hpp"
 #include "ecs/Components.hpp"
+#include "resources/TextureManager.hpp"
 
 // kierunki
 static const Vec2 kDirs[8] = {
@@ -15,24 +16,27 @@ static const Vec2 kDirs[8] = {
     {-0.707f,  -0.707f }, // nw
 };
 
-ShootingSystem::ShootingSystem(const InputManager& input, SDL_Texture* bulletTex)
+ShootingSystem::ShootingSystem(const InputManager& input, SDL_Texture* bulletTex, TextureManager& textures)
     : m_input(input), m_bulletTex(bulletTex) {}
 
 void ShootingSystem::update(Registry& reg, float dt) {
     m_cooldown -= dt;
 
-    if (!m_input.mouseDown(SDL_BUTTON_LEFT)) return;
-    if (m_cooldown > 0.f) return;
-
     // znajdywanie gracza
     Transform*     pt = nullptr;
     DirectionComp* pd = nullptr;
+    PlayerTag*     pTag = nullptr;
     reg.view<PlayerTag, Transform, DirectionComp>(
-        [&](Entity, PlayerTag&, Transform& t, DirectionComp& d) {
+        [&](Entity, PlayerTag& tag, Transform& t, DirectionComp& d) {
             pt = &t;
             pd = &d;
+            pTag = &tag;
         });
-    if (!pt || !pd) return;
+    if (!pt || !pd || !pTag) return;
+
+    pTag->isAiming = m_input.mouseDown(SDL_BUTTON_LEFT);
+
+    if (!pTag->isAiming || m_cooldown > 0.f) return;
 
     Vec2 dir = kDirs[static_cast<int>(pd->facing)];
 

@@ -37,7 +37,9 @@ struct Collider {
     bool  trigger = false;
 };
 
-struct PlayerTag {};
+struct PlayerTag {
+    bool isAiming = false;
+};
 
 struct EnemyTag {
     int   typeId          = 0;
@@ -66,6 +68,7 @@ struct DirectionComp {
     Direction8 facing = Direction8::South;
     std::array<SDL_Texture*, 8> idleTextures{};
     std::array<SDL_Texture*, 8> runTextures{};
+    std::array<SDL_Texture*, 8> aimTextures{};
 };
 
 struct AnimationComp {

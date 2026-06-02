@@ -29,25 +29,35 @@ static bool facingRight(Direction8 d) {
 }
 
 void SpriteDirectionSystem::update(Registry& reg, float /*dt*/) {
-    reg.view<Velocity, DirectionComp, SpriteComp>(
+reg.view<Velocity, DirectionComp, SpriteComp>(
         [&](Entity e, Velocity& vel, DirectionComp& dir, SpriteComp& sprite)
     {
+        bool isAiming = false;
+        if (auto* playerTag = reg.tryGet<PlayerTag>(e)) {
+            isAiming = playerTag->isAiming;
+        }
+
         bool isMoving = vel.value.lengthSq() >= 1.f;
 
-        if (isMoving) {
+        if (isMoving && !isAiming) {
             dir.facing = vecToDir8(vel.value.x, vel.value.y);
         }
 
-        SDL_Texture* tex = isMoving ? 
-            dir.runTextures[static_cast<int>(dir.facing)] : 
-            dir.idleTextures[static_cast<int>(dir.facing)];
+        SDL_Texture* tex = nullptr;
+        if (isAiming) {
+            tex = dir.aimTextures[static_cast<int>(dir.facing)];
+        } else if (isMoving) {
+            tex = dir.runTextures[static_cast<int>(dir.facing)];
+        } else {
+            tex = dir.idleTextures[static_cast<int>(dir.facing)];
+        }
 
         if (tex) {
             sprite.texture = tex;
         }
 
         if (auto* anim = reg.tryGet<AnimationComp>(e)) {
-            anim->isPlaying = isMoving; 
+            anim->isPlaying = isMoving && !isAiming; 
         }
     });
 

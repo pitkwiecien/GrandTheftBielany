@@ -2,11 +2,12 @@
 #include "systems/ISystem.hpp"
 #include <SDL.h>
 
+class TextureManager;
 class InputManager;
 
 class ShootingSystem : public ISystem {
 public:
-    ShootingSystem(const InputManager& input, SDL_Texture* bulletTex);
+    ShootingSystem(const InputManager& input, SDL_Texture* bulletTex, TextureManager& textures);
     void update(Registry& reg, float dt) override;
 
 private:

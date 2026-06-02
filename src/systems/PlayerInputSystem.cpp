@@ -8,12 +8,16 @@ PlayerInputSystem::PlayerInputSystem(InputManager& input, float baseSpeed)
 
 void PlayerInputSystem::update(Registry& reg, float dt) {
     reg.view<PlayerTag, Velocity>(
-        [&](Entity, PlayerTag&, Velocity& vel) {
-            Vec2 dir{};
-            if (m_input.isDown(SDL_SCANCODE_W) || m_input.isDown(SDL_SCANCODE_UP))    dir.y -= 1.f;
-            if (m_input.isDown(SDL_SCANCODE_S) || m_input.isDown(SDL_SCANCODE_DOWN))  dir.y += 1.f;
-            if (m_input.isDown(SDL_SCANCODE_A) || m_input.isDown(SDL_SCANCODE_LEFT))  dir.x -= 1.f;
-            if (m_input.isDown(SDL_SCANCODE_D) || m_input.isDown(SDL_SCANCODE_RIGHT)) dir.x += 1.f;
+        [&](Entity, PlayerTag& tag, Velocity& vel) {
+            
+            Vec2 dir{0.f, 0.f}; 
+
+            if (!tag.isAiming) {
+                if (m_input.isDown(SDL_SCANCODE_W) || m_input.isDown(SDL_SCANCODE_UP))    dir.y -= 1.f;
+                if (m_input.isDown(SDL_SCANCODE_S) || m_input.isDown(SDL_SCANCODE_DOWN))  dir.y += 1.f;
+                if (m_input.isDown(SDL_SCANCODE_A) || m_input.isDown(SDL_SCANCODE_LEFT))  dir.x -= 1.f;
+                if (m_input.isDown(SDL_SCANCODE_D) || m_input.isDown(SDL_SCANCODE_RIGHT)) dir.x += 1.f;
+            }
 
             Vec2 target = dir.normalized() * m_baseSpeed;
 
@@ -23,7 +27,9 @@ void PlayerInputSystem::update(Registry& reg, float dt) {
                 : 3.f + 15.f * speedRatio * speedRatio;
 
             vel.value = Math::lerp(vel.value, target, dynamicSmoothing * dt);
-            if (vel.value.lengthSq() < 0.5f)
-                vel.value = {};
+            
+            if (vel.value.lengthSq() < 0.5f) {
+                vel.value = Vec2{0.f, 0.f};
+            }
         });
 }

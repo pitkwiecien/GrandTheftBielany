@@ -40,6 +40,17 @@ static const char* kPlayerRunTextures[8] = {
     "assets/textures/huntsman/running/rotations/north-west.png",
 };
 
+static const char* kPlayerAimTextures[8] = {
+    "assets/textures/huntsman/aiming/rotations/north.png",
+    "assets/textures/huntsman/aiming/rotations/north-east.png",
+    "assets/textures/huntsman/aiming/rotations/east.png",
+    "assets/textures/huntsman/aiming/rotations/south-east.png",
+    "assets/textures/huntsman/aiming/rotations/south.png",
+    "assets/textures/huntsman/aiming/rotations/south-west.png",
+    "assets/textures/huntsman/aiming/rotations/west.png",
+    "assets/textures/huntsman/aiming/rotations/north-west.png",
+};
+
 static constexpr const char* kBoarTexture =
     "assets/textures/boar/south.png";
 
@@ -90,11 +101,12 @@ void PlayState::spawnPlayer() {
     auto& vel = m_registry.add<Velocity>(m_player);
     vel.maxSpeed = 220.f;
 
-    // load the run textures into the DirectionComp
+    // load the run, idle, aiming textures into the DirectionComp
     auto& dir = m_registry.add<DirectionComp>(m_player);
     for (int i = 0; i < 8; ++i) {
         dir.idleTextures[i] = m_textures.get(kPlayerTextures[i]);
         dir.runTextures[i]  = m_textures.get(kPlayerRunTextures[i]);
+        dir.aimTextures[i]  = m_textures.get(kPlayerAimTextures[i]);
     }
     dir.facing = Direction8::South;
 
@@ -189,9 +201,9 @@ void PlayState::buildSystems() {
         std::make_unique<ContactDamageSystem>());
 
     m_systems.push_back(
-        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
-
-    m_systems.push_back(
+        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture, m_textures));
+    
+        m_systems.push_back(
         std::make_unique<ProjectileSystem>());
 
     m_systems.push_back(
