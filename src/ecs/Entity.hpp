@@ -14,7 +14,6 @@ struct Entity {
     bool operator==(const Entity& o) const {
         return id == o.id && gen == o.gen;
     }
-    bool operator!=(const Entity& o) const { return !(*this == o); }
 };
 
 inline constexpr Entity kNullEntity{};

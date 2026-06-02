@@ -32,7 +32,3 @@ void Registry::flushDestroyed() {
         destroy(e);
     pendingDestroy.clear();
 }
-
-std::size_t Registry::aliveCount() const {
-    return next - freeIds.size();
-}

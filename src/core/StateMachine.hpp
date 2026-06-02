@@ -23,7 +23,6 @@ public:
     void applyPending();
 
     bool empty() const { return m_states.empty(); }
-    GameState* current();
 
     // Przekazuje zdarzenie/update/render z uwzględnieniem przezroczystości.
     void handleEvent(const SDL_Event& e);
@@ -34,6 +33,6 @@ private:
     enum class Action { None, Push, Pop, Replace, Clear };
 
     std::vector<std::unique_ptr<GameState>> m_states;
-    std::unique_ptr<GameState>              m_pending;
-    Action                                  m_action = Action::None;
+    std::unique_ptr<GameState> m_pending;
+    Action m_action = Action::None;
 };

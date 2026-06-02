@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include <cassert>
 #include "Entity.hpp"
 
 // Interfejs bazowy, by Registry trzymał pule różnych typów wspólnie.
@@ -59,8 +58,6 @@ public:
         for (std::size_t i = 0; i < m_dense.size(); ++i)
             fn(m_denseToEntity[i], m_dense[i]);
     }
-
-    std::size_t size() const { return m_dense.size(); }
 
 private:
     static constexpr std::uint32_t kInvalid = 0xFFFFFFFF;

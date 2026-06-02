@@ -7,7 +7,7 @@ class InputManager;
 // Uwzględnia StatModifiers.moveSpeedMult.
 class PlayerInputSystem : public ISystem {
 public:
-    explicit PlayerInputSystem(InputManager& input, float baseSpeed = 150.f);
+    PlayerInputSystem(InputManager& input, float baseSpeed = 150.f);
     void update(Registry& reg, float dt) override;
 
 private:

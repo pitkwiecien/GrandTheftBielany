@@ -10,8 +10,7 @@ public:
 
     int update(float dt, int livingEnemies);
 
-    int  currentWave() const { return m_wave; }
-    bool isSpawning()  const { return !m_idle; }
+    int currentWave() const { return m_wave; }
 
     Vec2 randomEdgePos() const;
 

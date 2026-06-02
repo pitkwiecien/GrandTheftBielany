@@ -17,10 +17,6 @@ SDL_Texture* TextureManager::get(const std::string& path) {
     return tex;
 }
 
-void TextureManager::querySize(SDL_Texture* tex, int& w, int& h) const {
-    SDL_QueryTexture(tex, nullptr, nullptr, &w, &h);
-}
-
 void TextureManager::clear() {
     for (auto& [path, tex] : m_cache)
         SDL_DestroyTexture(tex);

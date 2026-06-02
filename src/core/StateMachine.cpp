@@ -28,8 +28,7 @@ void StateMachine::clear() {
 void StateMachine::applyPending() {
     switch (m_action) {
         case Action::Push:
-            if (!m_states.empty() && m_states.back())
-                m_states.back()->onExit();
+            if (!m_states.empty() && m_states.back()) m_states.back()->onExit();
             m_states.push_back(std::move(m_pending));
             m_states.back()->onEnter();
             break;
@@ -65,10 +64,6 @@ void StateMachine::applyPending() {
     }
     m_action  = Action::None;
     m_pending = nullptr;
-}
-
-GameState* StateMachine::current() {
-    return m_states.empty() ? nullptr : m_states.back().get();
 }
 
 void StateMachine::handleEvent(const SDL_Event& e) {

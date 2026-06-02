@@ -14,7 +14,6 @@ public:
     bool alive(Entity e) const;
     void queueDestroy(Entity e) { pendingDestroy.push_back(e); }
     void flushDestroyed();
-    std::size_t aliveCount() const;
 
     template <typename T, typename... Args>
     T& add(Entity e, Args&&... args) {

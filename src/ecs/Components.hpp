@@ -6,7 +6,6 @@
 struct Transform {
     Vec2  pos{};
     float rotation = 0.f;
-    float scale    = 1.f;
 };
 
 struct Velocity {
@@ -40,7 +39,6 @@ struct Health {
 
 struct Collider {
     float radius = 8.f;
-    bool trigger = false;
 };
 
 struct PlayerTag {
@@ -48,10 +46,7 @@ struct PlayerTag {
 };
 
 struct EnemyTag {
-    int   typeId = 0;
     float touchDamage = 1.f;
-    float xpReward = 1.f;
-    float contactCooldown = 0.f;
 };
 
 struct SpriteComp {
@@ -59,8 +54,6 @@ struct SpriteComp {
     SDL_Rect srcRect{0, 0, 0, 0};
     int w = 0;
     int h = 0;
-    int layer = 0;
-    SDL_Color tint{255, 255, 255, 255};
     bool visible = true;
     bool flipHorizontal = false;
 };

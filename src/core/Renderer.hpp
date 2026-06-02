@@ -7,10 +7,10 @@ class Window;
 // Jedyna klasa core, której powinien dotykać RenderSystem.
 class Renderer {
 public:
-    explicit Renderer(Window& window);
+    Renderer(Window& window);
     ~Renderer();
 
-    Renderer(const Renderer&)            = delete;
+    Renderer(const Renderer&) = delete;
     Renderer& operator=(const Renderer&) = delete;
 
     void clear(SDL_Color color);

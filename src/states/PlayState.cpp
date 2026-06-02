@@ -54,8 +54,9 @@ static const char* kPlayerAimTextures[8] = {
 };
 
 static constexpr const char* kBoarTexture = "assets/textures/boar/south.png";
-static constexpr const char* kMapTexture = "assets/textures/maps/map1_m.png";
-static constexpr const char* kBeerTexture = "assets/textures/beer/beer.png";
+static constexpr const char* kMapTexture        = "assets/textures/maps/map1_m.png";
+static constexpr const char* kBeerTexture       = "assets/textures/beer/beer.png";
+static constexpr const char* kBulletTexture     = "assets/textures/projectile/projectile.png";
 
 PlayState::PlayState(
     StateContext ctx,
@@ -71,15 +72,11 @@ PlayState::~PlayState() = default;
 void PlayState::onEnter() {
     m_camera.setViewport(1280, 720);
 
-    m_bgTexture   = m_textures.get(kMapTexture);
-    m_beerTexture = m_textures.get(kBeerTexture);
+    m_bgTexture     = m_textures.get(kMapTexture);
+    m_beerTexture   = m_textures.get(kBeerTexture);
+    m_bulletTexture = m_textures.get(kBulletTexture);
     m_hpFont   = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
     m_waveFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 36);
-
-    SDL_Surface* surf = SDL_CreateRGBSurfaceWithFormat(0, 10, 4, 32, SDL_PIXELFORMAT_RGBA32);
-    SDL_FillRect(surf, nullptr, SDL_MapRGBA(surf->format, 255, 220, 50, 255));
-    m_bulletTexture = SDL_CreateTextureFromSurface(m_ctx.renderer->handle(), surf);
-    SDL_FreeSurface(surf);
 
     spawnPlayer();
     buildSystems();
@@ -136,7 +133,6 @@ void PlayState::spawnWaveEnemy(Vec2 pos) {
 
     auto& enemy = m_registry.add<EnemyTag>(e);
     enemy.touchDamage = 10.f;
-    enemy.xpReward    = 2.f;
 
     auto& vel = m_registry.add<Velocity>(e);
     vel.maxSpeed = 80.f;
@@ -212,7 +208,7 @@ void PlayState::buildSystems() {
         std::make_unique<ContactDamageSystem>());
 
     m_systems.push_back(
-        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture, m_textures));
+        std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
 
     m_systems.push_back(
         std::make_unique<ProjectileSystem>());
