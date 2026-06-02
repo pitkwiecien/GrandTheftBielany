@@ -266,7 +266,7 @@ void PlayState::update(float dt) {
     m_registry.view<EnemyTag, Health, Transform>(
         [&](Entity e, EnemyTag&, Health& hp, Transform& t) {
             if (hp.dead) {
-                if (Random::chance(0.05f))
+                if (Random::chance(0.1f))
                     beerSpawnPositions.push_back(t.pos);
                 m_registry.queueDestroy(e);
             }

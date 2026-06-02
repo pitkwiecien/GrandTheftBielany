@@ -94,6 +94,6 @@ struct ProjectileTag {
 };
 
 struct BeerPickup {
-    float healAmount = 10.f;
+    float healAmount = 5.f;
     float radius = 16.f;
 };
