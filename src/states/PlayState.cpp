@@ -1,6 +1,7 @@
 #include "math/Math.hpp"
 #include "ecs/Components.hpp"
 #include "states/PlayState.hpp"
+#include "states/EndState.hpp"
 #include <cmath>
 #include <string>
 #include "core/Renderer.hpp"
@@ -16,17 +17,18 @@
 #include "systems/ContactDamageSystem.hpp"
 #include "systems/ShootingSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
-
+#include "systems/PickupSystem.hpp"
+#include "util/Random.hpp"
 
 static const char* kPlayerTextures[8] = {
-    "assets/textures/huntsman/idle/rotations/north.png",       // 0 North
-    "assets/textures/huntsman/idle/rotations/north-east.png",  // 1 NorthEast
-    "assets/textures/huntsman/idle/rotations/east.png",        // 2 East
-    "assets/textures/huntsman/idle/rotations/south-east.png",  // 3 SouthEast
-    "assets/textures/huntsman/idle/rotations/south.png",       // 4 South
-    "assets/textures/huntsman/idle/rotations/south-west.png",  // 5 SouthWest
-    "assets/textures/huntsman/idle/rotations/west.png",        // 6 West
-    "assets/textures/huntsman/idle/rotations/north-west.png",  // 7 NorthWest
+    "assets/textures/huntsman/idle/rotations/north.png",
+    "assets/textures/huntsman/idle/rotations/north-east.png",
+    "assets/textures/huntsman/idle/rotations/east.png",
+    "assets/textures/huntsman/idle/rotations/south-east.png",
+    "assets/textures/huntsman/idle/rotations/south.png",
+    "assets/textures/huntsman/idle/rotations/south-west.png",
+    "assets/textures/huntsman/idle/rotations/west.png",
+    "assets/textures/huntsman/idle/rotations/north-west.png",
 };
 
 static const char* kPlayerRunTextures[8] = {
@@ -51,11 +53,9 @@ static const char* kPlayerAimTextures[8] = {
     "assets/textures/huntsman/aiming/rotations/north-west.png",
 };
 
-static constexpr const char* kBoarTexture =
-    "assets/textures/boar/south.png";
-
-static constexpr const char* kMapTexture = 
-    "assets/textures/maps/map1_m.png";
+static constexpr const char* kBoarTexture = "assets/textures/boar/south.png";
+static constexpr const char* kMapTexture = "assets/textures/maps/map1_m.png";
+static constexpr const char* kBeerTexture = "assets/textures/beer/beer.png";
 
 PlayState::PlayState(
     StateContext ctx,
@@ -71,8 +71,8 @@ PlayState::~PlayState() = default;
 void PlayState::onEnter() {
     m_camera.setViewport(1280, 720);
 
-    m_bgTexture = m_textures.get(kMapTexture);
-
+    m_bgTexture   = m_textures.get(kMapTexture);
+    m_beerTexture = m_textures.get(kBeerTexture);
     m_hpFont   = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 20);
     m_waveFont = m_fonts.get("assets/fonts/DejaVuSans-Bold.ttf", 36);
 
@@ -84,9 +84,7 @@ void PlayState::onEnter() {
     spawnPlayer();
     buildSystems();
 
-    m_renderSystem = std::make_unique<RenderSystem>(
-        *m_ctx.renderer, m_camera);
-
+    m_renderSystem = std::make_unique<RenderSystem>(*m_ctx.renderer, m_camera);
     m_dirSystem = std::make_unique<SpriteDirectionSystem>();
 }
 
@@ -101,7 +99,6 @@ void PlayState::spawnPlayer() {
     auto& vel = m_registry.add<Velocity>(m_player);
     vel.maxSpeed = 220.f;
 
-    // load the run, idle, aiming textures into the DirectionComp
     auto& dir = m_registry.add<DirectionComp>(m_player);
     for (int i = 0; i < 8; ++i) {
         dir.idleTextures[i] = m_textures.get(kPlayerTextures[i]);
@@ -110,15 +107,13 @@ void PlayState::spawnPlayer() {
     }
     dir.facing = Direction8::South;
 
-    // set up the Animation Component
     auto& anim = m_registry.add<AnimationComp>(m_player);
-    anim.numFrames = 4;
-    anim.frameWidth = 80;
+    anim.numFrames   = 4;
+    anim.frameWidth  = 80;
     anim.frameHeight = 80;
-    anim.frameTime = 0.1f;
-    anim.isPlaying = false;
+    anim.frameTime   = 0.1f;
+    anim.isPlaying   = false;
 
-    // set the initial sprite bounds
     auto& sprite = m_registry.add<SpriteComp>(m_player);
     sprite.texture = dir.idleTextures[static_cast<int>(Direction8::South)];
     sprite.srcRect = {0, 0, 80, 80};
@@ -157,6 +152,22 @@ void PlayState::spawnWaveEnemy(Vec2 pos) {
     auto& hp = m_registry.add<Health>(e);
     hp.max     = 20.f;
     hp.current = 20.f;
+}
+
+void PlayState::spawnBeer(Vec2 pos) {
+    Entity e = m_registry.create();
+
+    auto& t = m_registry.add<Transform>(e);
+    t.pos = pos;
+
+    auto& beer = m_registry.add<BeerPickup>(e);
+    beer.healAmount = 10.f;
+    beer.radius     = 16.f;
+
+    auto& sprite = m_registry.add<SpriteComp>(e);
+    sprite.texture = m_beerTexture;
+    sprite.w = 32;
+    sprite.h = 32;
 }
 
 Vec2 PlayState::findSpawnPos() {
@@ -202,9 +213,12 @@ void PlayState::buildSystems() {
 
     m_systems.push_back(
         std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture, m_textures));
-    
-        m_systems.push_back(
+
+    m_systems.push_back(
         std::make_unique<ProjectileSystem>());
+
+    m_systems.push_back(
+        std::make_unique<PickupSystem>());
 
     m_systems.push_back(
         std::make_unique<AnimationSystem>());
@@ -237,7 +251,9 @@ void PlayState::update(float dt) {
 
     if (auto* hp = m_registry.tryGet<Health>(m_player)) {
         if (hp->dead) {
-            m_ctx.states->clear();
+            int finalWave = m_waveDirector.currentWave();
+            m_ctx.states->replace(
+                std::make_unique<EndState>(m_ctx, m_textures, m_fonts, finalWave));
             return;
         }
         if (auto* sprite = m_registry.tryGet<SpriteComp>(m_player)) {
@@ -246,9 +262,14 @@ void PlayState::update(float dt) {
         }
     }
 
-    m_registry.view<EnemyTag, Health>(
-        [&](Entity e, EnemyTag&, Health& hp) {
-            if (hp.dead) m_registry.queueDestroy(e);
+    std::vector<Vec2> beerSpawnPositions;
+    m_registry.view<EnemyTag, Health, Transform>(
+        [&](Entity e, EnemyTag&, Health& hp, Transform& t) {
+            if (hp.dead) {
+                if (Random::chance(0.05f))
+                    beerSpawnPositions.push_back(t.pos);
+                m_registry.queueDestroy(e);
+            }
         });
 
     int toSpawn = m_waveDirector.update(dt, countLivingEnemies());
@@ -257,13 +278,16 @@ void PlayState::update(float dt) {
 
     int wave = m_waveDirector.currentWave();
     if (wave != m_lastAnnouncedWave) {
-        m_lastAnnouncedWave    = wave;
-        m_waveAnnounceTimer    = 3.f;
+        m_lastAnnouncedWave = wave;
+        m_waveAnnounceTimer = 3.f;
     }
     if (m_waveAnnounceTimer > 0.f)
         m_waveAnnounceTimer -= dt;
 
     m_registry.flushDestroyed();
+
+    for (auto& pos : beerSpawnPositions)
+        spawnBeer(pos);
 }
 
 void PlayState::render(Renderer& renderer) {
@@ -275,7 +299,7 @@ void PlayState::render(Renderer& renderer) {
     m_renderSystem->render(m_registry);
 
     if (m_waveFont && m_waveAnnounceTimer > 0.f) {
-        std::string text = "Fala " + std::to_string(m_lastAnnouncedWave);
+        std::string text = "Wave " + std::to_string(m_lastAnnouncedWave);
         Uint8 alpha = (m_waveAnnounceTimer >= 0.5f)
             ? 255
             : static_cast<Uint8>(255.f * m_waveAnnounceTimer / 0.5f);
@@ -295,7 +319,7 @@ void PlayState::render(Renderer& renderer) {
             SDL_DestroyTexture(t);
         };
 
-        drawWaveText(0, 0, {255, 210, 40, 255});   // tekst
+        drawWaveText(0, 0, {255, 210, 40, 255});
     }
 
     if (m_hpFont) {
@@ -303,7 +327,6 @@ void PlayState::render(Renderer& renderer) {
         if (hp) {
             std::string text = "HP: " + std::to_string(static_cast<int>(hp->current)) + " / 100";
 
-            // tekst
             SDL_Color white{255, 255, 255, 255};
             SDL_Surface* surf = TTF_RenderUTF8_Blended(m_hpFont, text.c_str(), white);
             if (surf) {

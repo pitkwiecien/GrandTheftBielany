@@ -7,4 +7,5 @@ public:
 
 private:
     static constexpr float kBulletRadius = 4.f;
+    static constexpr float kCritChance   = 0.05f;
 };

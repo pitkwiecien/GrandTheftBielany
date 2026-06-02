@@ -15,15 +15,21 @@ struct Velocity {
 };
 
 struct Health {
-    float current     = 1.f;
-    float max         = 1.f;
+    float current = 1.f;
+    float max = 1.f;
     float invulnTimer = 0.f;
-    bool  dead        = false;
+    bool  dead = false;
 
-    void damage(float amount) {
-        if (invulnTimer > 0.f || dead) return;
+    bool damage(float amount, bool isCrit = false) {
+        if (invulnTimer > 0.f || dead) return false;
+        if (isCrit) {
+            current = 0.f;
+            dead = true;
+            return true;
+        }
         current -= amount;
         if (current <= 0.f) { current = 0.f; dead = true; }
+        return false;
     }
 
     void heal(float amount) {
@@ -33,8 +39,8 @@ struct Health {
 };
 
 struct Collider {
-    float radius  = 8.f;
-    bool  trigger = false;
+    float radius = 8.f;
+    bool trigger = false;
 };
 
 struct PlayerTag {
@@ -42,9 +48,9 @@ struct PlayerTag {
 };
 
 struct EnemyTag {
-    int   typeId          = 0;
-    float touchDamage     = 1.f;
-    float xpReward        = 1.f;
+    int   typeId = 0;
+    float touchDamage = 1.f;
+    float xpReward = 1.f;
     float contactCooldown = 0.f;
 };
 
@@ -55,8 +61,8 @@ struct SpriteComp {
     int h = 0;
     int layer = 0;
     SDL_Color tint{255, 255, 255, 255};
-    bool visible         = true;
-    bool flipHorizontal  = false;
+    bool visible = true;
+    bool flipHorizontal = false;
 };
 
 enum Direction8 {
@@ -72,16 +78,22 @@ struct DirectionComp {
 };
 
 struct AnimationComp {
-    int   numFrames    = 1;
+    int   numFrames = 1;
     int   currentFrame = 0;
-    float frameTime    = 0.1f;
-    float accumulator  = 0.f;
-    int   frameWidth   = 0;
-    int   frameHeight  = 0;
-    bool  isPlaying    = false;
+    float frameTime = 0.1f;
+    float accumulator = 0.f;
+    int   frameWidth = 0;
+    int   frameHeight = 0;
+    bool  isPlaying = false;
 };
 
 struct ProjectileTag {
-    float damage   = 10.f;
+    float damage = 10.f;
     float lifetime =  2.f;
+    bool  isCrit = false;
+};
+
+struct BeerPickup {
+    float healAmount = 10.f;
+    float radius = 16.f;
 };
