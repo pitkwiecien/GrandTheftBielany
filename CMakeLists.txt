@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(megabonk_clone LANGUAGES CXX)
+project(gtb LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -55,45 +55,45 @@ endif()
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
      ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
-add_executable(megabonk ${SOURCES})
+add_executable(gtb ${SOURCES})
 
-target_include_directories(megabonk PRIVATE
+target_include_directories(gtb PRIVATE
     ${CMAKE_SOURCE_DIR}/src)
 
 # --- Linkowanie ------------------------------------------------------------
-target_link_libraries(megabonk PRIVATE SDL2::SDL2)
+target_link_libraries(gtb PRIVATE SDL2::SDL2)
 
 # SDL2main istnieje tylko na niektórych platformach (m.in. Windows/MinGW).
 if(TARGET SDL2::SDL2main)
-    target_link_libraries(megabonk PRIVATE SDL2::SDL2main)
+    target_link_libraries(gtb PRIVATE SDL2::SDL2main)
 endif()
 
 # SDL2_image
 if(TARGET SDL2_image::SDL2_image)
-    target_link_libraries(megabonk PRIVATE SDL2_image::SDL2_image)
+    target_link_libraries(gtb PRIVATE SDL2_image::SDL2_image)
 else()
-    target_include_directories(megabonk PRIVATE ${SDL2IMAGE_INCLUDE_DIRS})
-    target_link_libraries(megabonk PRIVATE ${SDL2IMAGE_LIBRARIES})
+    target_include_directories(gtb PRIVATE ${SDL2IMAGE_INCLUDE_DIRS})
+    target_link_libraries(gtb PRIVATE ${SDL2IMAGE_LIBRARIES})
 endif()
 
 # SDL2_ttf
 if(TARGET SDL2_ttf::SDL2_ttf)
-    target_link_libraries(megabonk PRIVATE SDL2_ttf::SDL2_ttf)
+    target_link_libraries(gtb PRIVATE SDL2_ttf::SDL2_ttf)
 else()
-    target_include_directories(megabonk PRIVATE ${SDL2TTF_INCLUDE_DIRS})
-    target_link_libraries(megabonk PRIVATE ${SDL2TTF_LIBRARIES})
+    target_include_directories(gtb PRIVATE ${SDL2TTF_INCLUDE_DIRS})
+    target_link_libraries(gtb PRIVATE ${SDL2TTF_LIBRARIES})
 endif()
 
 # SDL2_mixer
 if(TARGET SDL2_mixer::SDL2_mixer)
-    target_link_libraries(megabonk PRIVATE SDL2_mixer::SDL2_mixer)
+    target_link_libraries(gtb PRIVATE SDL2_mixer::SDL2_mixer)
 else()
-    target_include_directories(megabonk PRIVATE ${SDL2MIXER_INCLUDE_DIRS})
-    target_link_libraries(megabonk PRIVATE ${SDL2MIXER_LIBRARIES})
+    target_include_directories(gtb PRIVATE ${SDL2MIXER_INCLUDE_DIRS})
+    target_link_libraries(gtb PRIVATE ${SDL2MIXER_LIBRARIES})
 endif()
 
 # Kopiowanie assetów obok binarki.
-add_custom_command(TARGET megabonk POST_BUILD
+add_custom_command(TARGET gtb POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
-            $<TARGET_FILE_DIR:megabonk>/assets)
+            $<TARGET_FILE_DIR:gtb>/assets)
