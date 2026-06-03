@@ -15,11 +15,8 @@ void RenderSystem::render(Registry& reg) {
             return;
 
         SDL_Rect dst = m_camera.worldToScreen(t.pos, s.w, s.h);
-
         const SDL_Rect* src = (s.srcRect.w == 0) ? nullptr : &s.srcRect;
-
         SDL_RendererFlip flip = s.flipHorizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-
         SDL_RenderCopyEx(m_renderer.handle(), s.texture, src, &dst, t.rotation, nullptr, flip);
     });
 }

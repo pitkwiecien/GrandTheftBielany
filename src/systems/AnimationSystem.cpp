@@ -8,6 +8,7 @@ void AnimationSystem::update(Registry& reg, float dt) {
         // don't animate if stopped
         if (!anim.isPlaying) {
             anim.currentFrame = 0;
+            anim.accumulator = 0.f;
         } else {
             anim.accumulator += dt;
             if (anim.accumulator >= anim.frameTime) {

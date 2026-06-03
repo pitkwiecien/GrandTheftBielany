@@ -57,6 +57,11 @@ reg.view<Velocity, DirectionComp, SpriteComp>(
 
         if (auto* anim = reg.tryGet<AnimationComp>(e)) {
             anim->isPlaying = isMoving && !isAiming; 
+            if (!anim->isPlaying) {
+                anim->currentFrame = 0;
+                anim->accumulator = 0.f; 
+                sprite.srcRect.x = 0; 
+            }
         }
     });
 
