@@ -1,6 +1,6 @@
 # Grand Theft Bielany
 
-Prosta strzelanka 2D z widokiem z góry napisana w C++17 i SDL2. Gracz odpiera kolejne fale dzików, zbiera apteczki i eliminuje przeciwników za pomocą strzelby. Projekt wykorzystuje architekturę ECS (Entity Component System).
+Prosta strzelanka 2D z widokiem z góry napisana w C++17 i SDL2. Gracz wciela się w rolę myśliwgo - strzela do dzików i leczy się piwem. Projekt wykorzystuje architekturę ECS (Entity Component System).
 
 ---
 
