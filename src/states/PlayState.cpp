@@ -186,21 +186,13 @@ int PlayState::countLivingEnemies() {
 
 void PlayState::buildSystems() {
     m_systems.push_back(std::make_unique<PlayerInputSystem>(*m_ctx.input, 220.f));
-
     m_systems.push_back(std::make_unique<EnemyAISystem>());
-
     m_systems.push_back(std::make_unique<MovementSystem>());
-
     m_systems.push_back(std::make_unique<SeparationSystem>());
-
     m_systems.push_back(std::make_unique<ContactDamageSystem>());
-
     m_systems.push_back(std::make_unique<ShootingSystem>(*m_ctx.input, m_bulletTexture));
-
     m_systems.push_back(std::make_unique<ProjectileSystem>());
-
     m_systems.push_back(std::make_unique<PickupSystem>());
-
     m_systems.push_back(std::make_unique<AnimationSystem>());
 }
 
